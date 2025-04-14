@@ -1,20 +1,21 @@
 # POS Padi Express Backend API
 
 ## Project Overview
- 
+
 The Pedmonie Express Backend API is a Django-based analytics service designed to provide insights into critical business areas, including:
 
-- **Sales Performance Analytics**  
-  - **Revenue Trends:** Track overall sales performance over time (e.g., daily, weekly, monthly, quarterly). Show revenue growth or decline trends to help vendors understand performance.  
-  - **Sales by Product:** Display which renewable energy products (solar panels, wind turbines, batteries, etc.) are generating the most revenue.  
-  - **Sales by Region/Location:** Identify which geographic areas or markets are generating the most sales, useful for targeting specific regions.  
-  - **Sales by Time of Year:** Renewable energy products may have seasonal trends (e.g., increased sales in summer for solar products). Track sales spikes or dips during different times of the year.  
+- **Sales Performance Analytics**
+  - **Revenue Trends:** Track overall sales performance over time (e.g., daily, weekly, monthly, quarterly). Show revenue growth or decline trends to help vendors understand performance.
+  - **Sales by Product:** Display which renewable energy products (solar panels, wind turbines, batteries, etc.) are generating the most revenue.
+  - **Sales by Region/Location:** Identify which geographic areas or markets are generating the most sales, useful for targeting specific regions.
+  - **Sales by Time of Year:** Renewable energy products may have seasonal trends (e.g., increased sales in summer for solar products). Track sales spikes or dips during different times of the year.
 
 Live link: is at https://
 
 Doc link: https://documenter.getpostman.com/view/36548151/2sAYBPmZm1
 
 ## Installation Instructions
+
 ### Prerequisites
 
 Before setting up the project locally, ensure you have the following prerequisites installed:
@@ -25,16 +26,19 @@ Before setting up the project locally, ensure you have the following prerequisit
 ### How to run API Locally
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/InternPulse/pos-padi-express-backend.git
 ```
 
 2. Change into the parent directory:
+
 ```bash
 cd pos-padi-express-backend
 ```
 
 3. Set appropriate values for the following Compulsory Environment Variables:
+
 ```txt
 # Postgres connection string
 DATABASE_URL=""
@@ -45,22 +49,24 @@ PORT=5000
 ```
 
 4. Migrate Your Database:
-``` bash
+
+```bash
 npx prisma migrate dev --name init
 ```
 
 5. Install the App dependencies:
-``` bash
+
+```bash
 npm install
 ```
 
 6. Start the App:
+
 ```bash
 npm run dev
 ```
 
 The API should now be running locally at [http://localhost:5000/](http://localhost:5000/).
-
 
 # Commit Standards
 
@@ -87,8 +93,8 @@ pedmonie-express-backend is open to contributions, but I recommend creating an i
 10. Ensure to describe your pull request.
 11. > If you've added code that should be tested, add some test examples.
 
-
 # Merging
+
 Under any circumstances should you merge a pull request on a specific branch to the `dev` or `main` branch
 
 ### _Commit CheatSheet_
@@ -98,13 +104,13 @@ Under any circumstances should you merge a pull request on a specific branch to 
 | feat     | Features                 | A new feature                                                                                               |
 | fix      | Bug Fixes                | A bug fix                                                                                                   |
 | docs     | Documentation            | Documentation only changes                                                                                  |
-| style    | Styles                   | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)      |
+| style    | Styles                   | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)     |
 | refactor | Code Refactoring         | A code change that neither fixes a bug nor adds a feature                                                   |
 | perf     | Performance Improvements | A code change that improves performance                                                                     |
 | test     | Tests                    | Adding missing tests or correcting existing tests                                                           |
 | build    | Builds                   | Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)         |
 | ci       | Continuous Integrations  | Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs) |
-| chore    | Chores                   | Other changes that don't modify, backend or test files                                                    |
+| chore    | Chores                   | Other changes that don't modify, backend or test files                                                      |
 | revert   | Reverts                  | Reverts a previous commit                                                                                   |
 
 > _Sample Commit Messages_
