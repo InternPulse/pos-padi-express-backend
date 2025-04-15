@@ -81,5 +81,8 @@
     "tsyringe": "^4.8.0",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
