@@ -4,7 +4,8 @@
     "index.ts",
     "__tests__",
     "____sample/**/*",
-    ".eslintrc.js"
+    ".eslintrc.js",
+    "prisma/seed.ts"
   ], // Include all files in the src directory and index.ts
   "exclude": ["node_modules"], // Exclude the node_modules directory
   "compilerOptions": {

@@ -4,5 +4,6 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma",
     "editor.formatOnSave": true
-  }
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

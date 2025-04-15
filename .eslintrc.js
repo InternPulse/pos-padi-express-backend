@@ -31,6 +31,8 @@ module.exports = {
         optionalDependencies: ["@prisma/client"],
       },
     ],
+    "consistent-return": "off",
+    "@typescript-eslint/naming-convention": "off",
   },
   settings: {
     "import/resolver": {
