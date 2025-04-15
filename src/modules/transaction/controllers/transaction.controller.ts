@@ -6,6 +6,7 @@ import {
   updateTransactionService,
   deleteTransactionService,
 } from "../services/transaction.service"
+import success from "../../../shared/utils/misc/success"
 
 export async function createTransaction(req: Request, res: Response) {
   try {
@@ -31,8 +32,14 @@ export async function getTransactionById(req: Request, res: Response) {
 
 export async function getAllTransactions(req: Request, res: Response) {
   try {
-    const transactions = await getAllTransactionsService()
-    res.status(200).json({ success: true, data: transactions })
+    const { transactions, pagination } = await getAllTransactionsService(
+      req.query,
+    )
+    res.status(200).json(
+      success(transactions, "Transactions retrieved successfully", {
+        pagination,
+      }),
+    )
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
   }

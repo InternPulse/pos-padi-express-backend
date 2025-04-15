@@ -32,6 +32,7 @@ module.exports = {
       },
     ],
     "consistent-return": "off",
+    "@typescript-eslint/naming-convention": "off",
   },
   settings: {
     "import/resolver": {

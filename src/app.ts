@@ -35,7 +35,7 @@ async function startServer() {
     app.use(express.json())
 
     // routes
-    createAppRoutes(app)
+    await createAppRoutes(app)
 
     // 404 Middleware
     app.use((req, res) => {
