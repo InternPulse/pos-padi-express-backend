@@ -15,10 +15,18 @@ import {
 
 const router = Router()
 
-router.post("/", validateRequest(createTransactionSchema), createTransaction)
+router.post(
+  "/",
+  validateRequest(createTransactionSchema, "body"),
+  createTransaction,
+)
 router.get("/", validateRequest(getAllTransactionsSchema), getAllTransactions)
 router.get("/:id", getTransactionById)
-router.put("/:id", validateRequest(updateTransactionSchema), updateTransaction)
+router.put(
+  "/:id",
+  validateRequest(updateTransactionSchema, "body"),
+  updateTransaction,
+)
 router.delete("/:id", deleteTransaction)
 
 export default function transactionRoutes(app: Application) {
