@@ -15,7 +15,8 @@ export default function validateRequest(
         const e = error.issues
         const errs: string[] = []
         e.forEach((errorObj) => {
-          errs.push(errorObj.message)
+          const path = errorObj.path?.[0]
+          errs.push(`${errorObj.message}${path ? `: ${path}` : ""}`)
         })
         res.status(400).json({
           message: "bad request",
