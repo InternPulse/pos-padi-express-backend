@@ -2,6 +2,7 @@ import { PrismaClient, Transaction } from "@prisma/client"
 import { z } from "zod"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
 import getPagination from "../../../shared/utils/misc/get-pagination"
+import generateWhereClause from "../utils/generate-where-clause"
 
 const prisma = new PrismaClient()
 
@@ -16,38 +17,11 @@ async function getTransactionById(id: string) {
 async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
 ) {
-  const {
-    page = "1",
-    limit = "10",
-    sort_key,
-    sort_direction,
-    search,
-    date_from,
-    date_to,
-  } = query
+  const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
 
-  const where = {
-    is_active: true,
-    ...(date_from && {
-      created_at: {
-        gte: new Date(date_from),
-      },
-    }),
-    ...(date_to && {
-      created_at: {
-        lte: new Date(date_to),
-      },
-    }),
-    ...(search && {
-      OR: [
-        { description: { contains: search } },
-        { type: { contains: search } },
-        { status: { contains: search } },
-      ],
-    }),
-  }
+  const where = generateWhereClause(query)
 
   const totalCount = await prisma.transaction.count({ where })
 

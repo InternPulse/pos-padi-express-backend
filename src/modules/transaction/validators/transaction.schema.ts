@@ -29,6 +29,16 @@ export const getAllTransactionsSchema = z.object({
   search: z.string().optional(),
   date_from: z.string().optional(),
   date_to: z.string().optional(),
+  agent_id: z.string().optional(),
+  customer_id: z.string().optional(),
+  status: z.string().optional(),
+  type: z.string().optional(),
+  min_amount: z.string().optional(),
+  max_amount: z.string().optional(),
+  min_fee: z.string().optional(),
+  max_fee: z.string().optional(),
+  min_rating: z.string().optional(),
+  max_rating: z.string().optional(),
 })
 
 export const updateTransactionSchema = z.object({
