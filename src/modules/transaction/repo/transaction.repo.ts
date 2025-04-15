@@ -16,10 +16,40 @@ async function getTransactionById(id: string) {
 async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
 ) {
-  const { page = "1", limit = "10", sort_key, sort_direction, search } = query
+  const {
+    page = "1",
+    limit = "10",
+    sort_key,
+    sort_direction,
+    search,
+    date_from,
+    date_to,
+  } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
-  const totalCount = await prisma.transaction.count()
+
+  const where = {
+    is_active: true,
+    ...(date_from && {
+      created_at: {
+        gte: new Date(date_from),
+      },
+    }),
+    ...(date_to && {
+      created_at: {
+        lte: new Date(date_to),
+      },
+    }),
+    ...(search && {
+      OR: [
+        { description: { contains: search } },
+        { type: { contains: search } },
+        { status: { contains: search } },
+      ],
+    }),
+  }
+
+  const totalCount = await prisma.transaction.count({ where })
 
   const transactions = await prisma.transaction.findMany({
     take: limitNumber,
@@ -27,26 +57,7 @@ async function getAllTransactions(
     orderBy: {
       [sort_key || "created_at"]: sort_direction || "desc",
     },
-    where: {
-      is_active: true,
-      ...(query.start_date && {
-        created_at: {
-          gte: new Date(query.start_date),
-        },
-      }),
-      ...(query.end_date && {
-        created_at: {
-          lte: new Date(query.end_date),
-        },
-      }),
-      ...(search && {
-        OR: [
-          { description: { contains: search } },
-          { type: { contains: search } },
-          { status: { contains: search } },
-        ],
-      }),
-    },
+    where,
   })
 
   return {
