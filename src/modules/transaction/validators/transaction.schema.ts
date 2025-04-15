@@ -27,8 +27,8 @@ export const getAllTransactionsSchema = z.object({
     .optional(),
   sort_direction: z.enum(["asc", "desc"]).optional(),
   search: z.string().optional(),
-  start_date: z.string().optional(),
-  end_date: z.string().optional(),
+  date_from: z.string().optional(),
+  date_to: z.string().optional(),
 })
 
 export const updateTransactionSchema = z.object({
