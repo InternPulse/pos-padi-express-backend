@@ -11,7 +11,9 @@ import success from "../../../shared/utils/misc/success"
 export async function createTransaction(req: Request, res: Response) {
   try {
     const transaction = await createTransactionService(req.body)
-    res.status(201).json({ success: true, data: transaction })
+    res
+      .status(201)
+      .json(success(transaction, "Transaction created successfully"))
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -24,7 +26,9 @@ export async function getTransactionById(req: Request, res: Response) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
-    res.status(200).json({ success: true, data: transaction })
+    res
+      .status(200)
+      .json(success(transaction, "Transaction retrieved successfully"))
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -47,15 +51,14 @@ export async function getAllTransactions(req: Request, res: Response) {
 
 export async function updateTransaction(req: Request, res: Response) {
   try {
-    const updatedTransaction = await updateTransactionService(
-      req.params.id,
-      req.body,
-    )
-    if (!updatedTransaction) {
+    const transaction = await updateTransactionService(req.params.id, req.body)
+    if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
-    res.status(200).json({ success: true, data: updatedTransaction })
+    res
+      .status(200)
+      .json(success(transaction, "Transaction updated successfully"))
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
   }
