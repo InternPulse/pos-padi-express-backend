@@ -42,7 +42,6 @@ export const getAllTransactionsSchema = z.object({
 })
 
 export const updateTransactionSchema = z.object({
-  agent_id: z.string().optional(),
   customer_id: z.string().optional(),
   amount: z.number().positive().optional(),
   fee: z.number().nonnegative().optional(),
