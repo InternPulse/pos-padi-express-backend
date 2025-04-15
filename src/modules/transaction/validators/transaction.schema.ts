@@ -3,6 +3,7 @@ import { z } from "zod"
 export const createTransactionSchema = z.object({
   agent_id: z.string(),
   customer_id: z.string(),
+  description: z.string(),
   amount: z.number().positive(),
   fee: z.number().nonnegative(),
   type: z.string(),

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { addDays } from "date-fns"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
 
 export default function generateWhereClause(
@@ -9,7 +10,9 @@ export default function generateWhereClause(
   const where: Record<string, any> = { is_active: true }
 
   if (filters.agent_id) {
-    where.agent_id = filters.agent_id
+    if (Array.isArray(filters.agent_id))
+      where.agent_id = { in: filters.agent_id }
+    else where.agent_id = filters.agent_id
   }
 
   if (filters.customer_id) {
@@ -32,10 +35,30 @@ export default function generateWhereClause(
     if (filters.max_amount) where.amount.lte = parseFloat(filters.max_amount)
   }
 
+  if (filters.min_fee || filters.max_fee) {
+    where.fee = {}
+    if (filters.min_fee) where.fee.gte = parseFloat(filters.min_fee)
+    if (filters.max_fee) where.fee.lte = parseFloat(filters.max_fee)
+  }
+
+  if (filters.min_rating || filters.max_rating) {
+    where.rating = {}
+    if (filters.min_rating) where.rating.gte = parseFloat(filters.min_rating)
+    if (filters.max_rating) where.rating.lte = parseFloat(filters.max_rating)
+  }
+
   if (filters.date_from || filters.date_to) {
     where.created_at = {}
-    if (filters.date_from) where.created_at.gte = new Date(filters.date_from)
-    if (filters.date_to) where.created_at.lte = new Date(filters.date_to)
+  }
+
+  if (filters.date_from) {
+    const dateFrom = new Date(filters.date_from)
+    if (!Number.isNaN(dateFrom)) where.created_at.gte = dateFrom
+  }
+
+  if (filters.date_to) {
+    const dateTo = addDays(new Date(filters.date_to), 1)
+    if (!Number.isNaN(dateTo)) where.created_at.lt = dateTo
   }
 
   if (search) {
