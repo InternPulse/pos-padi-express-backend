@@ -14,19 +14,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Transaction {
-  id        String   @id @default(uuid())
-  terminal  String
-  amount    Float
-  status    String
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  agent_id    String   @db.VarChar(255)
+  customer_id String   @db.VarChar(255)
+  amount      Float
+  fee         Float
+  type        String
+  status      String
+  rating      Int?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }
 
 model Notification {
