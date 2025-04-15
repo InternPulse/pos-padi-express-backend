@@ -45,11 +45,18 @@ async function getAllTransactions(
 }
 
 async function updateTransaction(id: string, data: Partial<Transaction>) {
+  const transaction = await getTransactionById(id)
+  if (!transaction) return null
   return prisma.transaction.update({ where: { id }, data })
 }
 
 async function deleteTransaction(id: string) {
-  return prisma.transaction.delete({ where: { id } })
+  let transaction = await getTransactionById(id)
+  if (!transaction) return null
+  transaction = await updateTransaction(id, {
+    is_active: false,
+  })
+  return transaction
 }
 
 export default {
