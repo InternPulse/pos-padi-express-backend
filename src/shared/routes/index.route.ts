@@ -3,17 +3,22 @@ import { Application } from "express"
 import logger from "../../core/logging/logger"
 import { notificationRoutes } from "../../modules/notification/routes/notification.routes"
 
-export default function createAppRoutes(app: Application) {
+export default async function createAppRoutes(app: Application) {
   try {
     // Step: 1 - Import Routes
     // example: imported routes
     // terminalRoutes
     // notificationsRoutes
     // agentsRoutes
+    const { default: transactionRoutes } = await import(
+      "../../modules/transaction/routes/transaction.routes"
+    )
 
     // Step: 2 - Pass "app" to routes
     // Implementation: pass app to routes
     // terminalRoutes(app)
+    // notificationsRoutes(app) ...
+    transactionRoutes(app)
     notificationRoutes(app)
 
     logger.info("Application Routes Created")

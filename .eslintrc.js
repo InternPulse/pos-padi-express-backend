@@ -39,6 +39,7 @@ module.exports = {
         optionalDependencies: ["@prisma/client"],
       },
     ],
+    "consistent-return": "off",
   },
   settings: {
     "import/resolver": {
