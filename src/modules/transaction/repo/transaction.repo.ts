@@ -1,4 +1,7 @@
 import { PrismaClient, Transaction } from "@prisma/client"
+import { z } from "zod"
+import { getAllTransactionsSchema } from "../validators/transaction.schema"
+import getPagination from "../../../shared/utils/misc/get-pagination"
 
 const prisma = new PrismaClient()
 
@@ -10,8 +13,50 @@ async function getTransactionById(id: string) {
   return prisma.transaction.findUnique({ where: { id } })
 }
 
-async function getAllTransactions() {
-  return prisma.transaction.findMany()
+async function getAllTransactions(
+  query: z.infer<typeof getAllTransactionsSchema>,
+) {
+  const { page = "1", limit = "10", sort_key, sort_direction, search } = query
+  const pageNumber = parseInt(page, 10)
+  const limitNumber = parseInt(limit, 10)
+  const totalCount = await prisma.transaction.count()
+
+  const transactions = await prisma.transaction.findMany({
+    take: limitNumber,
+    skip: (pageNumber - 1) * limitNumber,
+    orderBy: {
+      [sort_key || "created_at"]: sort_direction || "desc",
+    },
+    where: {
+      is_active: true,
+      ...(query.start_date && {
+        created_at: {
+          gte: new Date(query.start_date),
+        },
+      }),
+      ...(query.end_date && {
+        created_at: {
+          lte: new Date(query.end_date),
+        },
+      }),
+      ...(search && {
+        OR: [
+          { description: { contains: search } },
+          { type: { contains: search } },
+          { status: { contains: search } },
+        ],
+      }),
+    },
+  })
+
+  return {
+    transactions,
+    pagination: getPagination(
+      { page: pageNumber, limit: limitNumber },
+      transactions.length,
+      totalCount,
+    ),
+  }
 }
 
 async function updateTransaction(id: string, data: Partial<Transaction>) {
