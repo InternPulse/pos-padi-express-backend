@@ -6,6 +6,7 @@ import {
   updateTransactionService,
   deleteTransactionService,
   getTransactionStatsService,
+  getAgentTransactionStatsService,
 } from "../services/transaction.service"
 import success from "../../../shared/utils/misc/success"
 
@@ -88,3 +89,15 @@ export async function getTransactionStats(req: Request, res: Response) {
     res.status(500).json({ success: false, message: error.message })
   }
 }
+
+export async function getAgentTransactionStats(req: Request, res: Response) {
+  try {
+    const agentId = req.params.agent_id
+    const stats = await getAgentTransactionStatsService(agentId)
+
+    res.status(200).json(success(stats, "Agent transaction stats retrieved successfully"))
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+

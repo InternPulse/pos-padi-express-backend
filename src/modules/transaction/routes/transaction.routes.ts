@@ -6,6 +6,7 @@ import {
   updateTransaction,
   deleteTransaction,
   getTransactionStats,
+  getAgentTransactionStats,
 } from "../controllers/transaction.controller"
 import validateRequest from "../../../shared/middleware/validation/request"
 import {
@@ -23,6 +24,7 @@ router.post(
 )
 router.get("/", validateRequest(getAllTransactionsSchema), getAllTransactions)
 router.get("/stats", getTransactionStats)
+router.get("/agent/:agent_id/stats", getAgentTransactionStats)
 router.get("/:id", getTransactionById)
 router.put(
   "/:id",

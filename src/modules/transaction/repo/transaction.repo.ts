@@ -120,6 +120,50 @@ async function getTransactionStats() {
   }
 }
 
+async function getAgentTransactionStats(agentId: string) {
+  const [totalAmount, successAmount, failedAmount, totalCount, customers, monthlyTrend] = await Promise.all([
+    prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: { agent_id: agentId, is_active: true },
+    }),
+    prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: { agent_id: agentId, status: "SUCCESS", is_active: true },
+    }),
+    prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: { agent_id: agentId, status: "FAILED", is_active: true },
+    }),
+    prisma.transaction.count({
+      where: { agent_id: agentId, is_active: true },
+    }),
+    prisma.transaction.findMany({
+      distinct: ["customer_id"],
+      select: { customer_id: true },
+      where: { agent_id: agentId, is_active: true },
+    }),
+    prisma.$queryRaw`
+      SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
+      FROM Transaction
+      WHERE agent_id = ${agentId} AND is_active = true
+      GROUP BY month
+      ORDER BY month
+    `,
+  ])
+
+  return {
+    totalAmount: totalAmount._sum.amount || 0,
+    successAmount: successAmount._sum.amount || 0,
+    failedAmount: failedAmount._sum.amount || 0,
+    totalCount,
+    totalCustomers: customers.length,
+    monthlyTrend: (monthlyTrend as any[]).map((entry: any) => ({
+      ...entry,
+      count: Number(entry.count),
+    })),
+  }
+}
+
 
 export default {
   createTransaction,
@@ -128,4 +172,5 @@ export default {
   updateTransaction,
   deleteTransaction,
   getTransactionStats,
+  getAgentTransactionStats,
 }
