@@ -1,3 +1,4 @@
+import dotenv from "dotenv"
 import "reflect-metadata"
 import express from "express"
 import http from "http"
@@ -9,6 +10,8 @@ import requestLogger from "./shared/middleware/logging/request-logger"
 import errorHandler from "./shared/middleware/errors/error-handler"
 import createAppRoutes from "./shared/routes/index.route"
 import { initWebSocket } from "./core/websocket"
+
+dotenv.config()
 
 const app = express()
 const server = http.createServer(app)
