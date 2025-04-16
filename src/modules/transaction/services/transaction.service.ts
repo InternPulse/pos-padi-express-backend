@@ -31,3 +31,7 @@ export async function deleteTransactionService(id: string) {
 export async function getTransactionStatsService() {
   return transactionRepo.getTransactionStats()
 }
+
+export async function getAgentTransactionStatsService(agentId: string) {
+  return transactionRepo.getAgentTransactionStats(agentId)
+}
