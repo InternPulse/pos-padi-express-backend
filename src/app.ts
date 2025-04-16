@@ -1,3 +1,4 @@
+import dotenv from "dotenv"
 import "reflect-metadata"
 import express from "express"
 import helmet from "helmet"
@@ -7,6 +8,8 @@ import logger from "./core/logging/logger"
 import requestLogger from "./shared/middleware/logging/request-logger"
 import errorHandler from "./shared/middleware/errors/error-handler"
 import createAppRoutes from "./shared/routes/index.route"
+
+dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 5000

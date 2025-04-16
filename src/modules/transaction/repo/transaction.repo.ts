@@ -60,13 +60,22 @@ async function deleteTransaction(id: string) {
 }
 
 async function getTransactionStats() {
-  const [totalAmount, successAmount, failedAmount, totalCount, totalRevenue, agents, customers, monthlyTrend] = await Promise.all([
+  const [
+    totalAmount,
+    successfulAmount,
+    failedAmount,
+    totalCount,
+    totalRevenue,
+    agents,
+    customers,
+    monthlyTrend,
+  ] = await Promise.all([
     prisma.transaction.aggregate({
       _sum: { amount: true },
     }),
     prisma.transaction.aggregate({
       _sum: { amount: true },
-      where: { status: "SUCCESS", is_active: true },
+      where: { status: "SUCCESSFUL", is_active: true },
     }),
     prisma.transaction.aggregate({
       _sum: { amount: true },
@@ -98,13 +107,16 @@ async function getTransactionStats() {
 
   return {
     totalAmount: totalAmount._sum.amount || 0,
-    successAmount: successAmount._sum.amount || 0,
+    successfulAmount: successfulAmount._sum.amount || 0,
     failedAmount: failedAmount._sum.amount || 0,
     totalCount,
     totalRevenue: totalRevenue._sum.fee || 0,
     totalAgents: agents.length,
     totalCustomers: customers.length,
-    monthlyTrend,
+    monthlyTrend: (monthlyTrend as any[]).map((entry: any) => ({
+      ...entry,
+      count: Number(entry.count),
+    })),
   }
 }
 

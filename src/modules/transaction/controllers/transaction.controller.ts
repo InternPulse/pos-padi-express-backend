@@ -5,6 +5,7 @@ import {
   getAllTransactionsService,
   updateTransactionService,
   deleteTransactionService,
+  getTransactionStatsService,
 } from "../services/transaction.service"
 import success from "../../../shared/utils/misc/success"
 
@@ -79,3 +80,11 @@ export async function deleteTransaction(req: Request, res: Response) {
   }
 }
 
+export async function getTransactionStats(req: Request, res: Response) {
+  try {
+    const stats = await getTransactionStatsService()
+    res.status(200).json(success(stats, "Admin Transaction stats retrieved successfully"))
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}

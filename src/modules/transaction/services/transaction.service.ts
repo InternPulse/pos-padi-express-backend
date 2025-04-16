@@ -27,3 +27,7 @@ export async function updateTransactionService(
 export async function deleteTransactionService(id: string) {
   return transactionRepo.deleteTransaction(id)
 }
+
+export async function getTransactionStatsService() {
+  return transactionRepo.getTransactionStats()
+}
