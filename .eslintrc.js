@@ -18,6 +18,14 @@ module.exports = {
   rules: {
     "no-console": "off",
     "prettier/prettier": "error",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ForOfStatement",
+        "message": "Use array iteration methods instead of loops."
+      }
+    ],
+    "generator-star-spacing": "off",
     semi: ["error", "never"],
     "no-underscore-dangle": [
       "error",
