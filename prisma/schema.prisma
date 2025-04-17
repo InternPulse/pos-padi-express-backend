@@ -14,6 +14,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ActivityType {
+  TRANSACTION
+  DISPUTE
+  ALERT
+}
+
+enum TerminalStatus {
+  ACTIVE
+  DISABLED
+}
+
 model Transaction {
   id          String   @id @default(uuid())
   agent_id    String   @db.VarChar(255)
@@ -27,4 +38,30 @@ model Transaction {
   is_active   Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model Terminal {
+  id         String         @id @default(uuid())
+  name       String
+  status     TerminalStatus @default(ACTIVE)
+  agentId    String?        
+  agent      Agent?         @relation(fields: [agentId], references: [id])
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  activities ActivityLog[]
+}
+
+model Agent {
+  id        String     @id @default(uuid())
+  name      String
+  terminals Terminal[]
+}
+
+model ActivityLog {
+  id         String       @id @default(uuid())
+  terminalId String
+  type       ActivityType
+  message    String
+  createdAt  DateTime     @default(now())
+  terminal   Terminal     @relation(fields: [terminalId], references: [id])
 }

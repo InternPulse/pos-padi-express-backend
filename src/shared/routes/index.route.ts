@@ -12,12 +12,16 @@ export default async function createAppRoutes(app: Application) {
     const { default: transactionRoutes } = await import(
       "../../modules/transaction/routes/transaction.routes"
     )
+    const { default: terminalRoutes } = await import(
+      "../../modules/terminal/routes/terminal.routes"
+    )
 
     // Step: 2 - Pass "app" to routes
     // Implementation: pass app to routes
     // terminalRoutes(app)
     // notificationsRoutes(app) ...
     transactionRoutes(app)
+    terminalRoutes(app)
 
     logger.info("Application Routes Created")
   } catch (e: any) {
