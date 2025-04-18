@@ -17,7 +17,7 @@ export default async function createAppRoutes(app: Application) {
     // Step: 2 - Pass "app" to routes
     // Implementation: pass app to routes
     // terminalRoutes(app)
-    // notificationsRoutes(app) ...
+    notificationRoutes(app)
     transactionRoutes(app)
     notificationRoutes(app)
 
