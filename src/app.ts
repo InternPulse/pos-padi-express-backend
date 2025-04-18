@@ -8,7 +8,7 @@ import logger from "./core/logging/logger"
 import requestLogger from "./shared/middleware/logging/request-logger"
 import errorHandler from "./shared/middleware/errors/error-handler"
 import createAppRoutes from "./shared/routes/index.route"
-import notificationRoutes from "./modules/notification/routes/notification.routes"
+import {notificationRoutes} from "./modules/notification/routes/notification.routes"
 import { initWebSocket } from "./core/websocket"
 
 const app = express()
