@@ -1,7 +1,9 @@
-import express, { Request, Response } from "express"
+import { Application, Request, Response } from "express"
+import express from "express"
 import createNewNotification from "../services/notification.service"
 
-const router = express.Router()
+export function notificationRoutes(app: Application) {
+  const router = express.Router()
 
 // POST: Create a new notification
 router.post("/", async (req: Request, res: Response) => {
@@ -15,13 +17,17 @@ router.post("/", async (req: Request, res: Response) => {
     )
     res.status(201).json({ success: true, notification })
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to create notification", error })
+    res.status(500).json({
+      success: false,
+      message: "Failed to create notification",
+      error,
+    })
   }
 })
 
 // GET: Fetch all notifications for a user
 // PATCH: Mark notification as read
 
-export default router
+  app.use("/api/v1/notification", router)
+}
+
