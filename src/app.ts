@@ -9,6 +9,14 @@ import requestLogger from "./shared/middleware/logging/request-logger"
 import errorHandler from "./shared/middleware/errors/error-handler"
 import createAppRoutes from "./shared/routes/index.route"
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: any
+    }
+  }
+}
+
 dotenv.config()
 
 const app = express()
