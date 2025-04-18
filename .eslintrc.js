@@ -22,7 +22,7 @@ module.exports = {
     "no-underscore-dangle": [
       "error",
       {
-        "allow": ["_id", "_sum", "_count", "_avg", "_min", "_max"],
+        allow: ["_id", "_sum", "_count", "_avg", "_min", "_max"],
       },
     ],
     "import/no-extraneous-dependencies": [
@@ -33,7 +33,6 @@ module.exports = {
     ],
     "consistent-return": "off",
     "@typescript-eslint/naming-convention": "off",
-    
   },
   settings: {
     "import/resolver": {
