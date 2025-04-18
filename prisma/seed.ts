@@ -31,6 +31,7 @@ function generateRandomTransactions(count: number) {
       customer_id: customers[Math.floor(Math.random() * customers.length)],
       description:
         descriptions[Math.floor(Math.random() * descriptions.length)],
+      reference: `TXN-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
       amount: parseFloat((Math.random() * 1000).toFixed(2)),
       fee: parseFloat((Math.random() * 10).toFixed(2)),
       type: types[Math.floor(Math.random() * types.length)],
