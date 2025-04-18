@@ -84,7 +84,9 @@ export async function deleteTransaction(req: Request, res: Response) {
 export async function getTransactionStats(req: Request, res: Response) {
   try {
     const stats = await getTransactionStatsService()
-    res.status(200).json(success(stats, "Admin Transaction stats retrieved successfully"))
+    res
+      .status(200)
+      .json(success(stats, "Admin Transaction stats retrieved successfully"))
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
   }
@@ -95,9 +97,10 @@ export async function getAgentTransactionStats(req: Request, res: Response) {
     const agentId = req.params.agent_id
     const stats = await getAgentTransactionStatsService(agentId)
 
-    res.status(200).json(success(stats, "Agent transaction stats retrieved successfully"))
+    res
+      .status(200)
+      .json(success(stats, "Agent transaction stats retrieved successfully"))
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
   }
 }
-
