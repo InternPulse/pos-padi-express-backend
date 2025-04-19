@@ -38,3 +38,24 @@ model Disputes {
   updated_at       DateTime @updatedAt
   is_active        Boolean  @default(true)
 }
+
+model Notification {
+  id          Int  @id @default(autoincrement()) 
+  userId      Int
+  title       String
+  message     String
+  type        String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  readAt      DateTime?
+
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  username      String
+  email         String        @unique
+  notifications Notification[]
+}
+
