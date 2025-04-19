@@ -13,8 +13,9 @@ export async function getTransactionByIdService(id: string) {
 
 export async function getAllTransactionsService(
   query: z.infer<typeof getAllTransactionsSchema>,
+  agentId?: string | number,
 ) {
-  return transactionRepo.getAllTransactions(query)
+  return transactionRepo.getAllTransactions(query, agentId)
 }
 
 export async function updateTransactionService(

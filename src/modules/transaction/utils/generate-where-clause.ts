@@ -66,6 +66,7 @@ export default function generateWhereClause(
       { description: { contains: search } },
       { type: { contains: search } },
       { status: { contains: search } },
+      { reference: { contains: search } },
     ]
   }
 

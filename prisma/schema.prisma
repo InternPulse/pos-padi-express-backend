@@ -19,6 +19,7 @@ model Transaction {
   agent_id    String   @db.VarChar(255)
   customer_id String   @db.VarChar(255)
   description String   @db.VarChar(255)
+  reference   String   @db.VarChar(255)
   amount      Float
   fee         Float
   type        String
