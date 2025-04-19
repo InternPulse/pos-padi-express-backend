@@ -9,6 +9,7 @@ import {
   getAgentTransactionStatsService,
 } from "../services/transaction.service"
 import success from "../../../shared/utils/misc/success"
+import agentIdFromReq from "../utils/agent-id-from-req"
 
 export async function createTransaction(req: Request, res: Response) {
   try {
@@ -28,6 +29,17 @@ export async function getTransactionById(req: Request, res: Response) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
+
+    const agentId = agentIdFromReq(req)
+
+    if (agentId && transaction.agent_id && agentId !== transaction.agent_id) {
+      res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this transaction",
+      })
+      return
+    }
+
     res
       .status(200)
       .json(success(transaction, "Transaction retrieved successfully"))
@@ -38,8 +50,10 @@ export async function getTransactionById(req: Request, res: Response) {
 
 export async function getAllTransactions(req: Request, res: Response) {
   try {
+    const agentId = agentIdFromReq(req)
     const { transactions, pagination } = await getAllTransactionsService(
       req.query,
+      agentId,
     )
     res.status(200).json(
       success(transactions, "Transactions retrieved successfully", {
@@ -58,6 +72,17 @@ export async function updateTransaction(req: Request, res: Response) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
+
+    const agentId = agentIdFromReq(req)
+
+    if (agentId && transaction.agent_id && agentId !== transaction.agent_id) {
+      res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this transaction",
+      })
+      return
+    }
+
     res
       .status(200)
       .json(success(transaction, "Transaction updated successfully"))
@@ -73,6 +98,17 @@ export async function deleteTransaction(req: Request, res: Response) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
+
+    const agentId = agentIdFromReq(req)
+
+    if (agentId && transaction.agent_id && agentId !== transaction.agent_id) {
+      res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this transaction",
+      })
+      return
+    }
+
     res
       .status(200)
       .json({ success: true, message: "Transaction deleted successfully" })

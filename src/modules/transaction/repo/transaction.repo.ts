@@ -18,12 +18,15 @@ async function getTransactionById(id: string) {
 
 async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
+  agentId?: string | number,
 ) {
   const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
 
   const where = generateWhereClause(query)
+
+  if (agentId) where.agent_id = String(agentId)
 
   const totalCount = await prisma.transaction.count({ where })
 

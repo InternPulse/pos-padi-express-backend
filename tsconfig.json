@@ -15,7 +15,7 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node10",
-    "typeRoots": ["./types", "node_modules/@types", "custom.d.ts"],
+    "typeRoots": ["node_modules/@types"],
     "types": ["jest", "node"],
     "allowJs": true,
     "sourceMap": true,
