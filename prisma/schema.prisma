@@ -29,6 +29,16 @@ model Transaction {
   updated_at  DateTime @updatedAt
 }
 
+model Disputes {
+  id               String   @id @default(uuid())
+  transaction_id   String   @unique @db.VarChar(255)
+  status           String   @default("Pending")
+  resolution_notes String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  is_active        Boolean  @default(true)
+}
+
 model Notification {
   id          Int  @id @default(autoincrement()) 
   userId      Int
@@ -41,9 +51,11 @@ model Notification {
 
   user        User    @relation(fields: [userId], references: [id])
 }
+
 model User {
   id            Int           @id @default(autoincrement())
   username      String
   email         String        @unique
   notifications Notification[]
 }
+
