@@ -67,19 +67,27 @@ export async function getAllTransactions(req: Request, res: Response) {
 
 export async function updateTransaction(req: Request, res: Response) {
   try {
-    const transaction = await updateTransactionService(req.params.id, req.body)
+    const agentId = agentIdFromReq(req)
+
+    let transaction = await getTransactionByIdService(req.params.id)
+
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
-
-    const agentId = agentIdFromReq(req)
 
     if (agentId && transaction.agent_id && agentId !== transaction.agent_id) {
       res.status(403).json({
         success: false,
         message: "You are not authorized to access this transaction",
       })
+      return
+    }
+
+    transaction = await updateTransactionService(req.params.id, req.body)
+
+    if (!transaction) {
+      res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
 
@@ -93,19 +101,26 @@ export async function updateTransaction(req: Request, res: Response) {
 
 export async function deleteTransaction(req: Request, res: Response) {
   try {
-    const transaction = await deleteTransactionService(req.params.id)
+    const agentId = agentIdFromReq(req)
+
+    let transaction = await getTransactionByIdService(req.params.id)
+
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
-
-    const agentId = agentIdFromReq(req)
 
     if (agentId && transaction.agent_id && agentId !== transaction.agent_id) {
       res.status(403).json({
         success: false,
         message: "You are not authorized to access this transaction",
       })
+      return
+    }
+
+    transaction = await deleteTransactionService(req.params.id)
+    if (!transaction) {
+      res.status(404).json({ success: false, message: "Transaction not found" })
       return
     }
 
