@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 import "reflect-metadata"
 import express from "express"
+import http from "http"
 import helmet from "helmet"
 import cors from "cors"
 import rateLimiter from "./shared/middleware/security/ratelimiter"
@@ -9,6 +10,7 @@ import requestLogger from "./shared/middleware/logging/request-logger"
 import errorHandler from "./shared/middleware/errors/error-handler"
 import createAppRoutes from "./shared/routes/index.route"
 import verifyJWT from "./shared/middleware/security/authorization"
+import { initWebSocket } from "./core/websocket"
 
 declare global {
   namespace Express {
@@ -21,13 +23,11 @@ declare global {
 dotenv.config()
 
 const app = express()
+const server = http.createServer(app)
 const PORT = process.env.PORT || 5000
 
 async function startServer() {
   try {
-    // Wait for the database connection to complete
-    // await connectDatabase()
-
     // Security Middleware
     app.use(helmet())
     app.use(rateLimiter)
@@ -40,16 +40,16 @@ async function startServer() {
       }),
     )
 
-    // logging
+    // Logging Middleware
     app.use(requestLogger)
 
-    // core middlewares
+    // Core Middleware
     app.use(express.json())
 
-    // authorization
+    // Authorization Middleware
     app.use(verifyJWT)
 
-    // routes
+    // Routes
     await createAppRoutes(app)
 
     // 404 Middleware
@@ -57,31 +57,35 @@ async function startServer() {
       res.status(404).json({ success: false, message: "Resource not found" })
     })
 
-    // error
+    // Error Handler
     app.use(errorHandler)
 
-    process.on("uncaughtException", (err) => {
-      logger.error(err, "Uncaught Exception")
-      process.exit(1)
-    })
+    // WebSocket Init
+    initWebSocket(server)
 
-    process.on("unhandledRejection", (reason, promise) => {
-      console.log(reason)
-      console.log(promise)
-      logger.error("Unhandled Rejection at:", promise, "reason:", reason)
-    })
-
-    app.listen(PORT, () => {
+    // Start Server
+    server.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`)
     })
 
-    logger.info("Server setup completed") // confirmation log
+    logger.info("Server setup completed")
   } catch (error) {
     logger.error("Failed to start server:", error)
-    process.exit(1) // Exit if database connection or server start fails
+    process.exit(1)
   }
+
+  // Global Error Handlers
+  process.on("uncaughtException", (err) => {
+    logger.error(err, "Uncaught Exception")
+    process.exit(1)
+  })
+
+  process.on("unhandledRejection", (reason, promise) => {
+    logger.error("Unhandled Rejection at:", promise, "reason:", reason)
+  })
 }
 
-startServer() // Call the async function to start the server
+startServer()
 
 export default app
+
