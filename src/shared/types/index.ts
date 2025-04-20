@@ -1,1 +1,1 @@
-export type Role = "owner" | "agent" | "admin"
+export type Role = "owner" | "agent" | "customer"
