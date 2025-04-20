@@ -1,5 +1,6 @@
 import { PrismaClient, Transaction } from "@prisma/client"
 import { z } from "zod"
+import { randomUUID } from "crypto"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
 import getPagination from "../../../shared/utils/misc/get-pagination"
 import generateWhereClause from "../utils/generate-where-clause"
@@ -7,7 +8,8 @@ import generateWhereClause from "../utils/generate-where-clause"
 const prisma = new PrismaClient()
 
 async function createTransaction(data: Transaction) {
-  return prisma.transaction.create({ data })
+  const reference = randomUUID().replace(/-/g, "").toUpperCase().slice(0, 12)
+  return prisma.transaction.create({ data: { ...data, reference } })
 }
 
 async function getTransactionById(id: string) {
@@ -16,12 +18,15 @@ async function getTransactionById(id: string) {
 
 async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
+  agentId?: string | number,
 ) {
   const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
 
   const where = generateWhereClause(query)
+
+  if (agentId) where.agent_id = String(agentId)
 
   const totalCount = await prisma.transaction.count({ where })
 
@@ -121,7 +126,14 @@ async function getTransactionStats() {
 }
 
 async function getAgentTransactionStats(agentId: string) {
-  const [totalAmount, successAmount, failedAmount, totalCount, customers, monthlyTrend] = await Promise.all([
+  const [
+    totalAmount,
+    successAmount,
+    failedAmount,
+    totalCount,
+    customers,
+    monthlyTrend,
+  ] = await Promise.all([
     prisma.transaction.aggregate({
       _sum: { amount: true },
       where: { agent_id: agentId, is_active: true },
@@ -163,7 +175,6 @@ async function getAgentTransactionStats(agentId: string) {
     })),
   }
 }
-
 
 export default {
   createTransaction,

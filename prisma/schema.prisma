@@ -19,6 +19,7 @@ model Transaction {
   agent_id    String   @db.VarChar(255)
   customer_id String   @db.VarChar(255)
   description String   @db.VarChar(255)
+  reference   String   @db.VarChar(255)
   amount      Float
   fee         Float
   type        String
@@ -27,6 +28,16 @@ model Transaction {
   is_active   Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model Disputes {
+  id               String   @id @default(uuid())
+  transaction_id   String   @unique @db.VarChar(255)
+  status           String   @default("Pending")
+  resolution_notes String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  is_active        Boolean  @default(true)
 }
 
 model Notification {
