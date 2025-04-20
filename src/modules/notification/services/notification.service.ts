@@ -26,6 +26,6 @@ export class NotificationService {
     await this.repo.markNotificationAsRead(id, userId)
   }
 }
-
+// comment
 const notificationService = new NotificationService(new NotificationRepo())
 export default notificationService
