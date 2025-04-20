@@ -46,9 +46,12 @@ model Notification {
   title       String
   message     String
   type        String
+  data        Json?   
+  deliveredAt DateTime?
   read        Boolean  @default(false)
-  createdAt   DateTime @default(now())
   readAt      DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   user        User    @relation(fields: [userId], references: [id])
 }

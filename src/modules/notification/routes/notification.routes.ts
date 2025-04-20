@@ -6,13 +6,14 @@ export function notificationRoutes(app: Application) {
 
   // POST: Create a new notification
   router.post("/", async (req: Request, res: Response) => {
-    const { userId, type, message, title } = req.body
+    const { userId, type, message, title, data } = req.body
     try {
       const notification = await createNewNotification(
         userId,
         type,
         message,
         title,
+        data,
       )
       res.status(201).json({ success: true, notification })
     } catch (error) {

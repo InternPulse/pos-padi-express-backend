@@ -6,9 +6,16 @@ const createNewNotification = async (
   type: string,
   message: string,
   title: string,
+  data?: Record<string, any>,
 ) => {
   // create the notification in the database
-  const notification = await createNotification(userId, type, message, title)
+  const notification = await createNotification(
+    userId,
+    type,
+    message,
+    title,
+    data,
+  )
 
   // send notification to the user's WebSocket in real-time
   sendNotificationToUser(userId, notification)

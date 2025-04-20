@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Application } from "express"
 import logger from "../../core/logging/logger"
-import { notificationRoutes } from "../../modules/notification/routes/notification.routes"
 
 export default async function createAppRoutes(app: Application) {
   try {
@@ -16,6 +15,10 @@ export default async function createAppRoutes(app: Application) {
 
     const { default: disputesRoutes } = await import(
       "../../modules/disputes/routes/disputes.routes"
+    )
+
+    const { default: notificationRoutes } = await import(
+      "../../modules/notification/routes/notification.routes"
     )
     // Step: 2 - Pass "app" to routes
     // Implementation: pass app to routes

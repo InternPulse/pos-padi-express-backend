@@ -8,6 +8,7 @@ const createNotification = async (
   type: string,
   message: string,
   title: string,
+  data?: Record<string, any>,
 ) => {
   return prisma.notification.create({
     data: {
@@ -15,6 +16,7 @@ const createNotification = async (
       type,
       message,
       title,
+      data,
     },
   })
 }
