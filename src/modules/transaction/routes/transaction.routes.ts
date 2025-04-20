@@ -36,4 +36,3 @@ router.delete("/:id", deleteTransaction)
 export default function transactionRoutes(app: Application) {
   app.use("/api/v1/transactions", router)
 }
-
