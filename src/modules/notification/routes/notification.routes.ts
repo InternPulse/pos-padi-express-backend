@@ -1,31 +1,34 @@
-import express, { Application, Request, Response } from "express"
-import createNewNotification from "../services/notification.service"
+import express, { Application } from "express"
+import NotificationController from "../controllers/notification.controller"
+import { NotificationService } from "../services/notification.service"
+import NotificationRepo from "../repo/notification.repo"
+
+const notificationRepo = new NotificationRepo()
+const notificationService = new NotificationService(notificationRepo)
+const notificationController = new NotificationController(notificationService)
 
 export function notificationRoutes(app: Application) {
   const router = express.Router()
 
-  // POST: Create a new notification
-  router.post("/", async (req: Request, res: Response) => {
-    const { userId, type, message, title } = req.body
-    try {
-      const notification = await createNewNotification(
-        userId,
-        type,
-        message,
-        title,
-      )
-      res.status(201).json({ success: true, notification })
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Failed to create notification",
-        error,
-      })
-    }
-  })
+  router.post(
+    "/",
+    notificationController.createNotification.bind(notificationController),
+  )
 
-  // GET: Fetch all notifications for a user
-  // PATCH: Mark notification as read
+  router.get(
+    "/:id",
+    notificationController.getNotification.bind(notificationController),
+  )
+
+  router.get(
+    "/",
+    notificationController.getNotifications.bind(notificationController),
+  )
+
+  router.patch(
+    "/:id/read",
+    notificationController.markNotificationAsRead.bind(notificationController),
+  )
 
   app.use("/api/v1/notification", router)
 }

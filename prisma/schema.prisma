@@ -41,22 +41,23 @@ model Disputes {
 }
 
 model Notification {
-  id          Int  @id @default(autoincrement()) 
+  id          Int       @id @default(autoincrement())
   userId      Int
   title       String
   message     String
+  data        Json?
+  deliveredAt DateTime? @default(now())
   type        String
-  read        Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  read        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
   readAt      DateTime?
 
-  user        User    @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   username      String
-  email         String        @unique
+  email         String         @unique
   notifications Notification[]
 }
-
