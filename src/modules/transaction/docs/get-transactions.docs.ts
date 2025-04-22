@@ -125,3 +125,44 @@
  *       200:
  *         description: List of transactions
  */
+
+/**
+ * @swagger
+ * /api/v1/transactions/{id}:
+ *   get:
+ *     summary: Get a transaction by ID
+ *     description: Retrieve the details of a specific transaction by its ID.
+ *     tags:
+ *       - Transactions
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the transaction to retrieve.
+ *     responses:
+ *       200:
+ *         description: Transaction retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       404:
+ *         description: Transaction not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Transaction not found"
+ */
