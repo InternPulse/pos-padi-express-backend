@@ -43,14 +43,43 @@ function generateRandomTransactions(count: number) {
   return transactions
 }
 
+const generateDisputes = (count: number) => {
+  const disputes = []
+  const statuses = ["Pending", "Resolved", "Rejected"]
+  const resolutions = [
+    "Refunded",
+    "Resolved with no action",
+    "Resolved with partial refund",
+    "Rejected",
+  ]
+  for (let i = 0; i < count; i++) {
+    const dispute = {
+      id: crypto.randomUUID(),
+      transaction_id: `TXN-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      resolution_notes:
+        resolutions[Math.floor(Math.random() * resolutions.length)],
+      created_at: new Date(),
+      updated_at: new Date(),
+      is_active: true,
+    }
+    disputes.push(dispute)
+    // Save the dispute to the database
+  }
+  return disputes
+}
+
 async function main() {
   const transactions = generateRandomTransactions(100)
+  const disputes = generateDisputes(100)
 
   await prisma.transaction.createMany({
     data: transactions,
   })
-
-  console.log("Seeded 100 transactions successfully!")
+  await prisma.disputes.createMany({
+    data: disputes,
+  })
+  console.log("Seeded 100 transactions and 100 disputes successfully!")
 }
 
 main()

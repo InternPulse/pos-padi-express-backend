@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import jwt from "jsonwebtoken"
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
