@@ -30,7 +30,7 @@ export function notificationRoutes(app: Application) {
     notificationController.markNotificationAsRead.bind(notificationController),
   )
 
-  app.use("/api/v1/notification", router)
+  app.use("/api/v1/notifications", router)
 }
 
 export default notificationRoutes
