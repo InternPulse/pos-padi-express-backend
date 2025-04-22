@@ -2,6 +2,8 @@
  * @swagger
  * /api/v1/transactions:
  *   get:
+ *     tags:
+ *       - Transactions
  *     summary: Get all transactions
  *     description: Retrieve a list of all transactions with optional filters.
  *     parameters:
