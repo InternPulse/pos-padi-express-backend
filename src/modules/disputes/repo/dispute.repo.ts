@@ -33,6 +33,7 @@ async function getAllDisputes(query: z.infer<typeof getAllDisputesSchema>) {
   const limitNumber = parseInt(limit, 10)
 
   const where = generateWhereClause(query)
+  console.log(where, "where clause")
 
   const totalCount = await prisma.disputes.count({ where })
 
