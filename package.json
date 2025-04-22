@@ -12,7 +12,8 @@
     "dev": "nodemon ./src/app.ts",
     "release": "semantic-release",
     "scan-deps": "npm audit",
-    "build-and-run": "npm run format && npm run lint && npm run build && npm run start"
+    "build-and-run": "npm run format && npm run lint && npm run build && npm run start",
+    "vercel-build": "tsc"
   },
   "repository": {
     "type": "git",
