@@ -28,7 +28,6 @@ const server = http.createServer(app)
 const PORT = process.env.PORT || 5000
 
 async function startServer() {
-  
   try {
     // Security Middleware
     app.use(helmet())
@@ -58,6 +57,9 @@ async function startServer() {
 
     // 404 Middleware
     app.use((req, res) => {
+      const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
+      console.log("Route not found: ", fullUrl)
+
       res.status(404).json({ success: false, message: "Resource not found" })
     })
 
