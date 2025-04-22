@@ -28,23 +28,18 @@ export default class NotificationRepo {
   }
 
   async getNotificationById(id: number, userId: string) {
-    try {
-      logger.debug("[Notification_Repo]: Getting notification by id", id)
-      const notification = await this.prisma.notification.findUnique({
-        where: { id, userId },
-      })
+    logger.debug("[Notification_Repo]: Getting notification by id", id)
+    const notification = await this.prisma.notification.findUnique({
+      where: { id, userId },
+    })
 
-      if (!notification) {
-        logger.error("[Notification_Repo]: Notification not found")
-        throw new ApiError("Notification not found", 404)
-      }
-
-      logger.info("[Notification_Repo]: Notification fetched successfully")
-      return notification
-    } catch (e: any) {
-      logger.error("[Notification_Repo]: Failed to get notification")
-      throw new ApiError("Failed to get notification", 500)
+    if (!notification) {
+      logger.error("[Notification_Repo]: Notification not found")
+      throw new ApiError("Notification not found", 404)
     }
+
+    logger.info("[Notification_Repo]: Notification fetched successfully")
+    return notification
   }
 
   async getNotifications(userId: string, page?: number, limit?: number) {
@@ -85,22 +80,17 @@ export default class NotificationRepo {
   }
 
   async markNotificationAsRead(id: number, userId: string) {
-    try {
-      logger.debug("[Notification_Repo]: Marking notification as read")
-      const result = await this.prisma.notification.updateMany({
-        where: { id, userId },
-        data: { read: true },
-      })
+    logger.debug("[Notification_Repo]: Marking notification as read")
+    const result = await this.prisma.notification.updateMany({
+      where: { id, userId },
+      data: { read: true },
+    })
 
-      if (result.count === 0) {
-        logger.error("[Notification_Repo]: Notification not found")
-        throw new ApiError("Notification not Found", 404)
-      }
-
-      logger.info("[Notification_Repo]: Notification marked as read")
-    } catch (e: any) {
-      logger.error("[Notification_Repo]: Failed to mark notification as read")
-      throw new ApiError("Failed to mark transaction as Read", 500)
+    if (result.count === 0) {
+      logger.error("[Notification_Repo]: Notification not found")
+      throw new ApiError("Notification not Found", 404)
     }
+
+    logger.info("[Notification_Repo]: Notification marked as read")
   }
 }

@@ -42,16 +42,18 @@ export default class NotificationController {
 
   async getNotifications(req: Request, res: Response, next: NextFunction) {
     try {
-      let { page, count } = req.body
-      page = parseInt(page, 10)
-      count = parseInt(count, 10)
+      const { page, limit } = req.query
+      const pageValue = page as any as number
+      const limitValue = limit as any as number
+
+      console.log(pageValue, limitValue)
       const userId =
         (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
 
       const data = await this.notificationService.getNotifications(
         userId,
-        page,
-        count,
+        pageValue,
+        limitValue,
       )
       res.status(201).json({
         message: "Notification fetched",
