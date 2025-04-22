@@ -7,9 +7,9 @@ const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Products Catalog API",
+      title: "POS-Padi API",
       version: "1.0.0",
-      description: "API documentation for the Products Catalog service",
+      description: "API documentation for the POS-Padi service",
     },
     servers: [{ url: "http://localhost:5000" }],
   },
