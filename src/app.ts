@@ -11,6 +11,7 @@ import errorHandler from "./shared/middleware/errors/error-handler"
 import createAppRoutes from "./shared/routes/index.route"
 import verifyJWT from "./shared/middleware/security/authorization"
 import { initWebSocket } from "./core/websocket"
+import setupSwagger from "./shared/utils/swagger"
 
 declare global {
   namespace Express {
@@ -39,6 +40,8 @@ async function startServer() {
         credentials: true,
       }),
     )
+
+    setupSwagger(app)
 
     // Logging Middleware
     app.use(requestLogger)
@@ -88,4 +91,3 @@ async function startServer() {
 startServer()
 
 export default app
-
