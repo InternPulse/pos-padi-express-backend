@@ -14,7 +14,6 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     const secretKey = process.env.JWT_SECRET_KEY as string
     const decoded = jwt.verify(token, secretKey)
     req.user = decoded
-    console.log("Secret Key:", decoded)
     next()
   } catch (err) {
     res.status(403).json({ message: "Invalid or expired token." })
