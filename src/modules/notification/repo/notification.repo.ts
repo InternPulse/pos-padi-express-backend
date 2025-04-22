@@ -27,7 +27,7 @@ export default class NotificationRepo {
     }
   }
 
-  async getNotificationById(id: number, userId: number) {
+  async getNotificationById(id: number, userId: string) {
     try {
       logger.debug("[Notification_Repo]: Getting notification by id", id)
       const notification = await this.prisma.notification.findUnique({
@@ -47,7 +47,7 @@ export default class NotificationRepo {
     }
   }
 
-  async getNotifications(userId: number, page?: number, limit?: number) {
+  async getNotifications(userId: string, page?: number, limit?: number) {
     try {
       // Fallback to defaults if invalid or undefined
       const currentPage = Number(page) > 0 ? Number(page) : 1
@@ -84,7 +84,7 @@ export default class NotificationRepo {
     }
   }
 
-  async markNotificationAsRead(id: number, userId: number) {
+  async markNotificationAsRead(id: number, userId: string) {
     try {
       logger.debug("[Notification_Repo]: Marking notification as read")
       const result = await this.prisma.notification.updateMany({

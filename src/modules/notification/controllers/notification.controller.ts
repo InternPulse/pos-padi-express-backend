@@ -23,7 +23,9 @@ export default class NotificationController {
     try {
       const { id } = req.params
       const notificationId = parseInt(id, 10)
-      const userId = 1
+      const userId =
+        (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+
       const notification = await this.notificationService.getNotificationById(
         notificationId,
         userId,
@@ -43,7 +45,9 @@ export default class NotificationController {
       let { page, count } = req.body
       page = parseInt(page, 10)
       count = parseInt(count, 10)
-      const userId = 1
+      const userId =
+        (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+
       const data = await this.notificationService.getNotifications(
         userId,
         page,
@@ -67,7 +71,9 @@ export default class NotificationController {
     try {
       const { id } = req.params
       const notificationId = parseInt(id, 10)
-      const userId = 1
+      const userId =
+        (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+
       await this.notificationService.markNotificationAsRead(
         notificationId,
         userId,
