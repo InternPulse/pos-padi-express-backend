@@ -4,7 +4,7 @@ import { z } from "zod"
 import { getAllDisputesSchema } from "../validators/dispute.schema"
 import getPagination from "../../../shared/utils/misc/get-pagination"
 import generateWhereClause from "../utils/generate-where-clause"
-import ConflictError from "../utils/ConflictError"
+import { ConflictError } from "../utils/ConflictError"
 
 const prisma = new PrismaClient()
 

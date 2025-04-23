@@ -1,6 +1,6 @@
-import dotenv from "dotenv"
-import "reflect-metadata"
-import express from "express"
+// import dotenv from "dotenv"
+// import "reflect-metadata"
+// import express from "express"
 // import http from "http"
 // import helmet from "helmet"
 // import cors from "cors"
@@ -13,17 +13,17 @@ import express from "express"
 // import { initWebSocket } from "./core/websocket"
 // import setupSwagger from "./shared/utils/swagger"
 
-declare global {
-  namespace Express {
-    interface Request {
-      user: any
-    }
-  }
-}
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       user: any
+//     }
+//   }
+// }
 
-dotenv.config()
+// dotenv.config()
 
-const app = express()
+// const app = express()
 // const server = http.createServer(app)
 // const PORT = process.env.PORT || 5000
 
@@ -93,4 +93,70 @@ const app = express()
 
 // startServer()
 
+// export default app
+
+import dotenv from "dotenv"
+import "reflect-metadata"
+import express from "express"
+import helmet from "helmet"
+import cors from "cors"
+
+import rateLimiter from "../src/shared/middleware/security/ratelimiter" // Update the path if the file exists elsewhere
+import requestLogger from "../src/shared/middleware/logging/request-logger"
+import errorHandler from "../src/shared/middleware/errors/error-handler"
+import createAppRoutes from "../src/shared/routes/index.route"
+// import verifyJWT from "./shared/middleware/security/authorization";
+// import { initWebSocket } from "./core/websocket";
+import setupSwagger from "../src/shared/utils/swagger"
+
+dotenv.config()
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: any
+    }
+  }
+}
+
+const app = express()
+
+// Security Middleware
+app.use(helmet())
+app.use(rateLimiter)
+app.use(
+  cors({
+    origin: "*", // Replace with allowed origins in prod
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+)
+
+// Swagger docs
+setupSwagger(app)
+
+// Logging Middleware
+app.use(requestLogger)
+
+// Core Middleware
+app.use(express.json())
+
+// Authorization Middleware (Optional if not needed for all routes)
+// app.use(verifyJWT);
+
+// Routes
+createAppRoutes(app)
+
+// 404 Handler
+app.use((req, res) => {
+  const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
+  console.log("Route not found: ", fullUrl)
+  res.status(404).json({ success: false, message: "Resource not found" })
+})
+
+// Error Handler
+app.use(errorHandler)
+
+// Export app for Vercel or other serverless hosting
 export default app

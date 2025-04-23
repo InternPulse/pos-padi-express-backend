@@ -4,6 +4,7 @@ module.exports = {
     project: "tsconfig.json", // Path to your tsconfig.json
     ecmaVersion: 2020, // Modern ECMAScript features
     sourceType: "module",
+    tsconfigRootDir: __dirname,
   },
   plugins: ["@typescript-eslint"],
   extends: [
@@ -26,11 +27,21 @@ module.exports = {
       },
     ],
     "import/no-extraneous-dependencies": [
-      "error",
-      {
-        optionalDependencies: ["@prisma/client"],
-      },
+  "error",
+  {
+    devDependencies: [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      "**/test/**",
+      "**/__tests__/**",
+      "**/*.config.js",
+      "**/scripts/**",
     ],
+    optionalDependencies: false,
+    packageDir: './',
+  },
+],
+
     "consistent-return": "off",
     "@typescript-eslint/naming-convention": "off",
   },
@@ -43,8 +54,19 @@ module.exports = {
   },
   overrides: [
     {
+      // Exclude .eslintrc.js from linting
+      files: [".eslintrc.js"],
+      rules: {
+        "@typescript-eslint/no-var-requires": "off",
+      },
+    },
+    {
       // Apply to all TypeScript files
-      files: ["__tests__/**/*.test.ts", "__tests__/**/*.spec.ts"],
+      files: ["__tests__/**/*.test.ts", "__tests__/**/*.spec.ts", "api/index.ts"],
+
+      rules: {
+        "import/no-extraneous-dependencies": "off",
+      },
       // General rules for the project
       env: {
         jest: true,
