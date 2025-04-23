@@ -5,8 +5,8 @@
   "main": "api/index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/api/index.js",
-    "dev": "nodemon api/app.ts",
+    "start": "node ./dist/src/bin/server.js",
+    "dev": "nodemon ./src/bin/server.ts",
     "vercel-build": "tsc",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"**/*.{ts,js,json,md,yml}\"",
