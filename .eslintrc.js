@@ -72,5 +72,11 @@ module.exports = {
         jest: true,
       },
     },
+    {
+      files: ["api/**/*.ts"], // 👈 This is the new block
+      rules: {
+        "import/prefer-default-export": "off"
+      }
+    }
   ],
 }

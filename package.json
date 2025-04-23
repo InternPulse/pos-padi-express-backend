@@ -5,7 +5,7 @@
   "main": "api/index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/api/index.js",
+    "start": "node ./dist/api/index.js",
     "dev": "nodemon api/app.ts",
     "vercel-build": "tsc",
     "lint": "eslint . --ext .ts",
