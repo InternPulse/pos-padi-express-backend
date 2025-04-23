@@ -155,6 +155,10 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: "Resource not found" })
 })
 
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "API is live 🚀" })
+})
+
 // Error Handler
 app.use(errorHandler)
 
