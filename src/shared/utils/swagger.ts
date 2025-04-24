@@ -1,7 +1,7 @@
 import swaggerJsDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
 import path from "path"
-import { Express } from "express"
+import { Express, Request, Response } from "express"
 
 const swaggerOptions = {
   definition: {
@@ -20,4 +20,8 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions)
 
 export default function setupSwagger(app: Express) {
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+  app.use("/json-docs", swaggerUi.serve, (_: Request, res: Response) => {
+    res.setHeader("Content-Type", "application/json")
+    res.send(swaggerDocs)
+  })
 }
