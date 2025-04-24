@@ -25,7 +25,7 @@ function generateRandomTransactions(count: number) {
   const transactions = []
 
   // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i += 1) {
     transactions.push({
       agent_id: agents[Math.floor(Math.random() * agents.length)],
       customer_id: customers[Math.floor(Math.random() * customers.length)],
@@ -52,7 +52,7 @@ const generateDisputes = (count: number) => {
     "Resolved with partial refund",
     "Rejected",
   ]
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i += 1) {
     const dispute = {
       id: crypto.randomUUID(),
       transaction_id: `TXN-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
