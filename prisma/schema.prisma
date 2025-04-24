@@ -19,7 +19,7 @@ model Transaction {
   agent_id    String   @db.VarChar(255)
   customer_id String   @db.VarChar(255)
   description String   @db.VarChar(255)
-  reference   String @default("N/A") @db.VarChar(255)
+  reference   String   @default("N/A") @db.VarChar(255)
   amount      Float
   fee         Float
   type        String
@@ -28,6 +28,8 @@ model Transaction {
   is_active   Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+
+  @@map("transactions")
 }
 
 model Disputes {
@@ -38,6 +40,8 @@ model Disputes {
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
   is_active        Boolean  @default(true)
+
+  @@map("disputes")
 }
 
 model Notification {
@@ -52,15 +56,5 @@ model Notification {
   createdAt   DateTime  @default(now())
   readAt      DateTime?
 
-  // user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("notifications")
 }
-
-// model User {
-//   id            String         @id @map("id") @db.VarChar(255)
-//   username      String         @default("anonymous") @map("username")
-//   email         String         @map("email")
-//   notifications Notification[]
-
-//   @@map("users_user") // This maps the Prisma model to Django's users_user table
-// }
-
