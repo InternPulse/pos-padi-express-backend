@@ -1,10 +1,10 @@
 -- CreateTable
-CREATE TABLE `Transaction` (
+CREATE TABLE `transactions` (
     `id` VARCHAR(191) NOT NULL,
     `agent_id` VARCHAR(255) NOT NULL,
     `customer_id` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
-    `reference` VARCHAR(255) NOT NULL,
+    `reference` VARCHAR(255) NOT NULL DEFAULT 'N/A',
     `amount` DOUBLE NOT NULL,
     `fee` DOUBLE NOT NULL,
     `type` VARCHAR(191) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE `Transaction` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Disputes` (
+CREATE TABLE `disputes` (
     `id` VARCHAR(191) NOT NULL,
     `transaction_id` VARCHAR(255) NOT NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'Pending',
@@ -27,12 +27,12 @@ CREATE TABLE `Disputes` (
     `updated_at` DATETIME(3) NOT NULL,
     `is_active` BOOLEAN NOT NULL DEFAULT true,
 
-    UNIQUE INDEX `Disputes_transaction_id_key`(`transaction_id`),
+    UNIQUE INDEX `disputes_transaction_id_key`(`transaction_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Notification` (
+CREATE TABLE `notifications` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` VARCHAR(255) NOT NULL,
     `title` VARCHAR(191) NOT NULL,
@@ -46,17 +46,3 @@ CREATE TABLE `Notification` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `User` (
-    `id` VARCHAR(255) NOT NULL,
-    `username` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NOT NULL,
-
-    UNIQUE INDEX `User_id_key`(`id`),
-    UNIQUE INDEX `User_email_key`(`email`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- AddForeignKey
-ALTER TABLE `Notification` ADD CONSTRAINT `Notification_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
