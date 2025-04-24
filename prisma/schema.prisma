@@ -19,7 +19,7 @@ model Transaction {
   agent_id    String   @db.VarChar(255)
   customer_id String   @db.VarChar(255)
   description String   @db.VarChar(255)
-  reference   String   @db.VarChar(255)
+  reference   String @default("N/A") @db.VarChar(255)
   amount      Float
   fee         Float
   type        String
@@ -52,12 +52,15 @@ model Notification {
   createdAt   DateTime  @default(now())
   readAt      DateTime?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id            String         @id @unique @db.VarChar(255)
-  username      String
-  email         String         @unique
-  notifications Notification[]
-}
+// model User {
+//   id            String         @id @map("id") @db.VarChar(255)
+//   username      String         @default("anonymous") @map("username")
+//   email         String         @map("email")
+//   notifications Notification[]
+
+//   @@map("users_user") // This maps the Prisma model to Django's users_user table
+// }
+
