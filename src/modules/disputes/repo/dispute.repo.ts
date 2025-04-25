@@ -4,12 +4,25 @@ import { z } from "zod"
 import { getAllDisputesSchema } from "../validators/dispute.schema"
 import getPagination from "../../../shared/utils/misc/get-pagination"
 import generateWhereClause from "../utils/generate-where-clause"
-import { ConflictError } from "../utils/ConflictError"
+import ConflictError from "../utils/ConflictError"
+import ApiError from "../../../shared/utils/ApiError"
 
 const prisma = new PrismaClient()
 
 async function createDisputeRepo(data: Disputes) {
   try {
+    const disputeExists = await prisma.disputes.findFirst({
+      where: {
+        transaction_id: data.transaction_id,
+        status: "Pending",
+      },
+    })
+    if (disputeExists) {
+      throw new ApiError(
+        `A pending dispute with this transaction ID already exists`,
+        409,
+      )
+    }
     // eslint-disable-next-line @typescript-eslint/return-await
     return await prisma.disputes.create({ data })
   } catch (error: any) {
@@ -25,7 +38,10 @@ async function createDisputeRepo(data: Disputes) {
   }
 }
 async function getDisputeById(id: string) {
-  return prisma.disputes.findUnique({ where: { id } })
+  return prisma.disputes.findUnique({
+    where: { id },
+    include: { transaction: true },
+  })
 }
 async function getAllDisputes(query: z.infer<typeof getAllDisputesSchema>) {
   const { page = "1", limit = "10", sort_key, sort_direction } = query
@@ -43,6 +59,7 @@ async function getAllDisputes(query: z.infer<typeof getAllDisputesSchema>) {
       [sort_key || "created_at"]: sort_direction || "desc",
     },
     where,
+    include: { transaction: true },
   })
 
   return {
@@ -57,16 +74,19 @@ async function getAllDisputes(query: z.infer<typeof getAllDisputesSchema>) {
 async function updateDispute(id: string, data: Partial<Disputes>) {
   const dispute = await getDisputeById(id)
   if (!dispute) return null
-  return prisma.disputes.update({ where: { id }, data })
+  return prisma.disputes.update({
+    where: { id },
+    data,
+    include: { transaction: true },
+  })
 }
 async function deleteDispute(id: string) {
-  let dispute = await getDisputeById(id)
+  const dispute = await getDisputeById(id)
   if (!dispute) return null
-  dispute = await updateDispute(id, {
-    is_active: false,
-  })
-  return dispute
+
+  return updateDispute(id, { is_active: false })
 }
+
 async function getDisputeStats() {
   const totalDisputes = await prisma.disputes.count()
   const openDisputes = await prisma.disputes.count({
@@ -75,6 +95,7 @@ async function getDisputeStats() {
   const closedDisputes = await prisma.disputes.count({
     where: { status: "closed" },
   })
+
   return {
     totalDisputes,
     openDisputes,

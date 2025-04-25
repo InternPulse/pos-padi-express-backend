@@ -27,10 +27,10 @@ async function createDisputeController(
   next: NextFunction,
 ) {
   try {
+    console.log(req.user, "hello2")
     const dispute = await createDispute(req.body)
     res.status(201).json(dispute)
   } catch (error: any) {
-    console.log(JSON.stringify(error), "temilorun")
     next(error)
   }
 }

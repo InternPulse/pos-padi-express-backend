@@ -1,8 +1,11 @@
-import { PrismaClient } from "@prisma/client"
+import { Prisma, PrismaClient } from "@prisma/client"
+import crypto from "crypto"
 
 const prisma = new PrismaClient()
 
-function generateRandomTransactions(count: number) {
+function generateRandomTransactions(
+  count: number,
+): Prisma.TransactionCreateInput[] {
   const agents = ["agent1", "agent2", "agent3", "agent4", "agent5"]
   const customers = [
     "customer1",
@@ -22,10 +25,9 @@ function generateRandomTransactions(count: number) {
   const statuses = ["completed", "pending", "failed"]
   const ratings = [1, 2, 3, 4, 5]
 
-  const transactions = []
+  const transactions: Prisma.TransactionCreateInput[] = []
 
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < count; i += 1) {
+  for (let i = 0; i < count; i++) {
     transactions.push({
       agent_id: agents[Math.floor(Math.random() * agents.length)],
       customer_id: customers[Math.floor(Math.random() * customers.length)],
@@ -43,8 +45,9 @@ function generateRandomTransactions(count: number) {
   return transactions
 }
 
-const generateDisputes = (count: number) => {
-  const disputes = []
+function generateDisputes(
+  transactions: { id: string }[],
+): Prisma.DisputesCreateInput[] {
   const statuses = ["Pending", "Resolved", "Rejected"]
   const resolutions = [
     "Refunded",
@@ -52,40 +55,52 @@ const generateDisputes = (count: number) => {
     "Resolved with partial refund",
     "Rejected",
   ]
-  for (let i = 0; i < count; i += 1) {
-    const dispute = {
-      id: crypto.randomUUID(),
-      transaction_id: `TXN-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      resolution_notes:
-        resolutions[Math.floor(Math.random() * resolutions.length)],
-      created_at: new Date(),
-      updated_at: new Date(),
-      is_active: true,
+  const disputes: Prisma.DisputesCreateInput[] = []
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const tx of transactions) {
+    if (Math.random() < 0.5) {
+      disputes.push({
+        id: crypto.randomUUID(),
+        transaction: {
+          connect: { id: tx.id },
+        },
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+        resolution_notes:
+          resolutions[Math.floor(Math.random() * resolutions.length)],
+        created_at: new Date(),
+        updated_at: new Date(),
+        is_active: true,
+      })
     }
-    disputes.push(dispute)
-    // Save the dispute to the database
   }
+
   return disputes
 }
 
 async function main() {
-  const transactions = generateRandomTransactions(100)
-  const disputes = generateDisputes(100)
+  const transactionsData = generateRandomTransactions(100)
 
-  await prisma.transaction.createMany({
-    data: transactions,
-  })
-  await prisma.disputes.createMany({
-    data: disputes,
-  })
-  console.log("Seeded 100 transactions and 100 disputes successfully!")
+  // Use create (not createMany) to retain access to inserted IDs
+  const createdTransactions = await Promise.all(
+    transactionsData.map((tx) => prisma.transaction.create({ data: tx })),
+  )
+
+  const disputesData = generateDisputes(createdTransactions)
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const dispute of disputesData) {
+    // eslint-disable-next-line no-await-in-loop
+    await prisma.disputes.create({ data: dispute })
+  }
+
+  console.log(
+    `Seeded ${createdTransactions.length} transactions and ${disputesData.length} disputes successfully!`,
+  )
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
+  .then(() => prisma.$disconnect())
   .catch(async (e) => {
     console.error(e)
     await prisma.$disconnect()

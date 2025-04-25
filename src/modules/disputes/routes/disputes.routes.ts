@@ -14,11 +14,7 @@ import { createDisputeSchema } from "../validators/dispute.schema"
 const router = Router()
 router.get("/", getAllDisputesController)
 router.get("/:id", getDisputeByIdController)
-router.put(
-  "/:id",
-  validateRequest(createDisputeSchema, "body"),
-  updateDisputeController,
-)
+router.put("/:id", updateDisputeController)
 router.delete("/:id", deleteDisputeController)
 router.get("/stats", getDisputeStatsController)
 router.post(

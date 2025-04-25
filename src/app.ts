@@ -13,6 +13,7 @@ import setupSwagger from "./shared/utils/swagger"
 import notificationRoutes from "./modules/notification/routes/notification.routes"
 import transactionRoutes from "./modules/transaction/routes/transaction.routes"
 import disputesRoutes from "./modules/disputes/routes/disputes.routes"
+import verifyJWT from "./shared/middleware/security/authorization"
 
 declare global {
   namespace Express {
