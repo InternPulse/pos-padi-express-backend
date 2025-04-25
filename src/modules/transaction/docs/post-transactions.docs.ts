@@ -13,10 +13,6 @@
  *           schema:
  *             type: object
  *             properties:
- *               agent_id:
- *                 type: string
- *                 description: The ID of the agent associated with the transaction.
- *                 example: "agent1"
  *               customer_id:
  *                 type: string
  *                 description: The ID of the customer associated with the transaction.

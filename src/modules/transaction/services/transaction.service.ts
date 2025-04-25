@@ -3,8 +3,11 @@ import { z } from "zod"
 import transactionRepo from "../repo/transaction.repo"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
 
-export async function createTransactionService(data: Transaction) {
-  return transactionRepo.createTransaction(data)
+export async function createTransactionService(
+  data: Transaction,
+  agentId: string,
+) {
+  return transactionRepo.createTransaction(data, agentId)
 }
 
 export async function getTransactionByIdService(id: string) {

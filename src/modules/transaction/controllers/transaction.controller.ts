@@ -13,7 +13,17 @@ import agentIdFromReq from "../utils/agent-id-from-req"
 
 export async function createTransaction(req: Request, res: Response) {
   try {
-    const transaction = await createTransactionService(req.body)
+    const agentId = agentIdFromReq(req)
+
+    if (!agentId) {
+      res.status(403).json({
+        success: false,
+        message: "You are not authorized to create this transaction",
+      })
+      return
+    }
+
+    const transaction = await createTransactionService(req.body, agentId)
     res
       .status(201)
       .json(success(transaction, "Transaction created successfully"))
