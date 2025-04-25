@@ -38,7 +38,7 @@ export async function updateDispute(
   return disputeRepo.updateDispute(id, data)
 }
 
-export async function deleteDispute(id: string) {
+export async function deleteDispute(id: string): Promise<Disputes | null> {
   return disputeRepo.deleteDispute(id)
 }
 
