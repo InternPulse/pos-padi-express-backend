@@ -5,9 +5,5 @@
     "editor.defaultFormatter": "Prisma.prisma",
     "editor.formatOnSave": true
   },
-  "postman.settings.dotenv-detection-notification-visibility": false,
-  "yaml.schemas": {
-    "file:///Users/kayode/.vscode/extensions/atlassian.atlascode-3.0.10/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml",
-    "https://www.artillery.io/schema.json": []
-  }
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
