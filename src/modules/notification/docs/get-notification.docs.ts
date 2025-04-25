@@ -31,9 +31,9 @@
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: integer
- *                       example: 11
- *                     userId:
+ *                       type: string
+ *                       example: "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+ *                     user_id:
  *                       type: string
  *                       example: "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
  *                     title:
@@ -47,7 +47,7 @@
  *                       additionalProperties:
  *                         type: string
  *                       example: { "key": "value" }
- *                     deliveredAt:
+ *                     delivered_at:
  *                       type: string
  *                       format: date-time
  *                       example: "2025-04-22T17:37:57.766Z"
@@ -57,11 +57,11 @@
  *                     read:
  *                       type: boolean
  *                       example: false
- *                     createdAt:
+ *                     created_at:
  *                       type: string
  *                       format: date-time
  *                       example: "2025-04-22T17:37:57.766Z"
- *                     readAt:
+ *                     read_at:
  *                       type: string
  *                       format: date-time
  *                       nullable: true

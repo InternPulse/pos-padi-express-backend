@@ -27,10 +27,10 @@ export default class NotificationRepo {
     }
   }
 
-  async getNotificationById(id: number, userId: string) {
+  async getNotificationById(id: string, user_id: string) {
     logger.debug("[Notification_Repo]: Getting notification by id", id)
     const notification = await this.prisma.notification.findUnique({
-      where: { id, userId },
+      where: { id, user_id },
     })
 
     if (!notification) {
@@ -42,7 +42,7 @@ export default class NotificationRepo {
     return notification
   }
 
-  async getNotifications(userId: string, page?: number, limit?: number) {
+  async getNotifications(user_id: string, page?: number, limit?: number) {
     try {
       // Fallback to defaults if invalid or undefined
       const currentPage = Number(page) > 0 ? Number(page) : 1
@@ -53,13 +53,13 @@ export default class NotificationRepo {
       logger.debug("[Notification_Repo]: Getting notifications")
       const [notifications, total] = await this.prisma.$transaction([
         this.prisma.notification.findMany({
-          where: { userId },
-          orderBy: { createdAt: "desc" },
+          where: { user_id },
+          orderBy: { created_at: "desc" },
           skip,
           take: currentLimit,
         }),
         this.prisma.notification.count({
-          where: { userId },
+          where: { user_id },
         }),
       ])
 
@@ -79,10 +79,10 @@ export default class NotificationRepo {
     }
   }
 
-  async markNotificationAsRead(id: number, userId: string) {
+  async markNotificationAsRead(id: string, user_id: string) {
     logger.debug("[Notification_Repo]: Marking notification as read")
     const result = await this.prisma.notification.updateMany({
-      where: { id, userId },
+      where: { id, user_id },
       data: { read: true },
     })
 

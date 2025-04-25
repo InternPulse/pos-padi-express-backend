@@ -1,5 +1,5 @@
 export default interface createNotificationDTO {
-  userId: string
+  user_id: string
   type: string
   message: string
   title: string

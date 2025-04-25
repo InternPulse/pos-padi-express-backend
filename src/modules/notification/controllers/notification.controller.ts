@@ -21,10 +21,9 @@ export default class NotificationController {
 
   async getNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params
-      const notificationId = parseInt(id, 10)
-      const userId =
-        (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+      const notificationId = req.params.id
+
+      const userId = req.user?.user_id as string
 
       const notification = await this.notificationService.getNotificationById(
         notificationId,
@@ -46,9 +45,7 @@ export default class NotificationController {
       const pageValue = page as any as number
       const limitValue = limit as any as number
 
-      console.log(pageValue, limitValue)
-      const userId =
-        (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+      const userId = req.user?.user_id as string
 
       const data = await this.notificationService.getNotifications(
         userId,
@@ -71,10 +68,8 @@ export default class NotificationController {
     next: NextFunction,
   ) {
     try {
-      const { id } = req.params
-      const notificationId = parseInt(id, 10)
-      const userId =
-        (req.user?.id as string) ?? "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+      const notificationId = req.params.id
+      const userId = req.user?.user_id as string
 
       await this.notificationService.markNotificationAsRead(
         notificationId,
