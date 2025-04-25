@@ -45,16 +45,16 @@ model Disputes {
 }
 
 model Notification {
-  id          Int       @id @default(autoincrement())
-  userId      String    @db.VarChar(255)
-  title       String
-  message     String
-  data        Json?
-  deliveredAt DateTime? @default(now())
-  type        String
-  read        Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  readAt      DateTime?
+  id           String    @id @default(uuid())
+  user_id      String    @db.VarChar(255)
+  title        String
+  message      String
+  data         Json?
+  delivered_at DateTime? @default(now())
+  type         String
+  read         Boolean   @default(false)
+  created_at   DateTime  @default(now())
+  read_at      DateTime?
 
   @@map("notifications")
 }

@@ -3,23 +3,16 @@ import { z } from "zod"
 export const createNotificationValidationSchema = z.object({
   title: z.string().min(1, "Title is required"),
   message: z.string().min(1, "Message is required"),
-  userId: z.string().min(1, "User ID is required"),
+  user_id: z.string().min(1, "User ID is required"),
   type: z.string().min(1, "type is required"),
   data: z.record(z.unknown()).optional(),
 })
 
 export const getNotificationValidationSchema = z.object({
-  id: z
-    .string({
-      required_error: "ID is required",
-    })
-    .pipe(
-      z.coerce
-        .number({
-          invalid_type_error: "ID must be a number",
-        })
-        .int("ID must be an integer"),
-    ),
+  id: z.string({
+    required_error: "Notification ID is required",
+    invalid_type_error: "Notification ID must be a string",
+  }),
 })
 
 export const getNotificationsValidationSchema = z.object({
@@ -53,17 +46,10 @@ export const getNotificationsValidationSchema = z.object({
 })
 
 export const markNotificationAsReadValidationSchema = z.object({
-  id: z
-    .string({
-      required_error: "ID is required",
-    })
-    .pipe(
-      z.coerce
-        .number({
-          invalid_type_error: "ID must be a number",
-        })
-        .int("ID must be an integer"),
-    ),
+  id: z.string({
+    required_error: "ID is required",
+    invalid_type_error: " Notification ID must be a string",
+  }),
 })
 
 export type CreateNotificationSchema = z.infer<

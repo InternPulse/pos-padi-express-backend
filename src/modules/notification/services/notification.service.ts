@@ -12,18 +12,18 @@ export class NotificationService {
     return notification
   }
 
-  async getNotificationById(id: number, userId: string) {
-    const notification = await this.repo.getNotificationById(id, userId)
+  async getNotificationById(id: string, user_id: string) {
+    const notification = await this.repo.getNotificationById(id, user_id)
     return notification
   }
 
-  async getNotifications(userId: string, page: number, limit: number) {
-    const data = await this.repo.getNotifications(userId, page, limit)
+  async getNotifications(user_id: string, page: number, limit: number) {
+    const data = await this.repo.getNotifications(user_id, page, limit)
     return data
   }
 
-  async markNotificationAsRead(id: number, userId: string) {
-    await this.repo.markNotificationAsRead(id, userId)
+  async markNotificationAsRead(id: string, user_id: string) {
+    await this.repo.markNotificationAsRead(id, user_id)
   }
 }
 // comment

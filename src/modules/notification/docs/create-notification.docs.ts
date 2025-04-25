@@ -21,7 +21,7 @@
  *                 type: string
  *                 description: The message content of the notification.
  *                 example: "You have a new message in your inbox."
- *               userId:
+ *               user_id:
  *                 type: string
  *                 description: The ID of the user to whom the notification is sent.( Valid UUID format )
  *                 example: "123e4567-e89b-12d3-a456-426614174000"
@@ -55,9 +55,9 @@
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: integer
- *                       example: 9
- *                     userId:
+ *                       type: string
+ *                       example: "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
+ *                     user_id:
  *                       type: string
  *                       example: "d5f0c0c4-8d47-4ad1-8f64-d3125e11e52b"
  *                     title:
@@ -70,7 +70,7 @@
  *                       type: object
  *                       example:
  *                         key: "value"
- *                     deliveredAt:
+ *                     delivered_at:
  *                       type: string
  *                       format: date-time
  *                       example: "2025-04-22T16:45:30.095Z"
@@ -80,11 +80,11 @@
  *                     read:
  *                       type: boolean
  *                       example: false
- *                     createdAt:
+ *                     created_at:
  *                       type: string
  *                       format: date-time
  *                       example: "2025-04-22T16:45:30.095Z"
- *                     readAt:
+ *                     read_at:
  *                       type: string
  *                       format: date-time
  *                       nullable: true
