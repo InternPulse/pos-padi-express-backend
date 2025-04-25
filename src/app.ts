@@ -7,13 +7,11 @@ import rateLimiter from "./shared/middleware/security/ratelimiter"
 import requestLogger from "./shared/middleware/logging/request-logger"
 import errorHandler from "./shared/middleware/errors/error-handler"
 import verifyJWT from "./shared/middleware/security/authorization"
-// import { initWebSocket } from "./core/websocket"
 import setupSwagger from "./shared/utils/swagger"
 // eslint-disable-next-line import/no-named-as-default
 import notificationRoutes from "./modules/notification/routes/notification.routes"
 import transactionRoutes from "./modules/transaction/routes/transaction.routes"
 import disputesRoutes from "./modules/disputes/routes/disputes.routes"
-import verifyJWT from "./shared/middleware/security/authorization"
 
 declare global {
   namespace Express {
