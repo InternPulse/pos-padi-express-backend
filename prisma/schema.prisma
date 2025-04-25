@@ -29,17 +29,22 @@ model Transaction {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
+  disputes Disputes[]
+
   @@map("transactions")
 }
 
 model Disputes {
-  id               String   @id @default(uuid())
-  transaction_id   String   @unique @db.VarChar(255)
+  id             String @id @default(uuid())
+  transaction_id String @db.VarChar(255)
+
   status           String   @default("Pending")
   resolution_notes String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
   is_active        Boolean  @default(true)
+
+  transaction Transaction? @relation(fields: [transaction_id], references: [id])
 
   @@map("disputes")
 }
