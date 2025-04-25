@@ -7,9 +7,11 @@ import generateWhereClause from "../utils/generate-where-clause"
 
 const prisma = new PrismaClient()
 
-async function createTransaction(data: Transaction) {
+async function createTransaction(data: Transaction, agentId: string) {
   const reference = randomUUID().replace(/-/g, "").toUpperCase().slice(0, 12)
-  return prisma.transaction.create({ data: { ...data, reference } })
+  return prisma.transaction.create({
+    data: { ...data, reference, agent_id: agentId },
+  })
 }
 
 async function getTransactionById(id: string) {
