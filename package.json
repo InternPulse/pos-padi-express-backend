@@ -13,7 +13,8 @@
     "test": "jest",
     "release": "semantic-release",
     "scan-deps": "npm audit",
-    "build-and-run": "npm run format && npm run lint && npm run build && npm run start"
+    "build-and-run": "npm run format && npm run lint && npm run build && npm run start",
+    "migrate": "prisma migrate deploy"
   },
   "repository": {
     "type": "git",

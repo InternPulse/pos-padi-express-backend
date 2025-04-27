@@ -105,7 +105,7 @@ async function getTransactionStats() {
     }),
     prisma.$queryRaw`
       SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
-      FROM Transaction
+      FROM transactions
       WHERE is_active = true
       GROUP BY month
       ORDER BY month
@@ -158,7 +158,7 @@ async function getAgentTransactionStats(agentId: string) {
     }),
     prisma.$queryRaw`
       SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
-      FROM Transaction
+      FROM transactions
       WHERE agent_id = ${agentId} AND is_active = true
       GROUP BY month
       ORDER BY month
