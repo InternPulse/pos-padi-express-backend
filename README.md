@@ -1,29 +1,37 @@
-# POS Padi Express Backend API
+# POS Padi Express Backend
 
-## Project Overview
+A robust backend service for managing POS operations, built with Node.js, TypeScript, and Prisma.
 
-The Pedmonie Express Backend API is a Django-based analytics service designed to provide insights into critical business areas, including:
+## 🚀 Project Overview
 
-- **Sales Performance Analytics**
-  - **Revenue Trends:** Track overall sales performance over time (e.g., daily, weekly, monthly, quarterly). Show revenue growth or decline trends to help vendors understand performance.
-  - **Sales by Product:** Display which renewable energy products (solar panels, wind turbines, batteries, etc.) are generating the most revenue.
-  - **Sales by Region/Location:** Identify which geographic areas or markets are generating the most sales, useful for targeting specific regions.
-  - **Sales by Time of Year:** Renewable energy products may have seasonal trends (e.g., increased sales in summer for solar products). Track sales spikes or dips during different times of the year.
+POS Padi Express provides a secure and scalable API for handling core features related to transactions, disputes, and notifications within a POS (Point of Sale) ecosystem.
 
-Live link: is at https://
+### Key features include:
+- Transaction creation, listing, and per-agent analytics
+- Dispute management (create, view, update, delete, statistics)
+- Notification system with read tracking
 
-Doc link: https://documenter.getpostman.com/view/36548151/2sAYBPmZm1
+## 🛠️ Tech Stack
 
-## Installation Instructions
+- **Node.js**
+- **TypeScript**
+- **Express.js**
+- **Prisma ORM**
+- **PostgreSQL** (or your DB of choice)
+- **Jest** (for testing)
+
+
+## 📦 Getting Started
 
 ### Prerequisites
 
-Before setting up the project locally, ensure you have the following prerequisites installed:
+- Node.js ≥ 16.x
+- npm or yarn
+- PostgreSQL or any configured DB
+- [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference)
 
-- [Node.js](https://nodejs.org) (>=20.14.0).
-- A Database System (e.g., PostgreSQL, MySQL, SQLite)
 
-### How to run API Locally
+## Installation Instructions
 
 1. Clone the repository:
 
@@ -66,54 +74,65 @@ npm install
 npm run dev
 ```
 
-The API should now be running locally at [http://localhost:5000/](http://localhost:5000/).
+The API should now be running locally at [http://localhost:5000/](http://localhost:5000/)
 
-# Commit Standards
+## 📄 API Documentation
+You can explore and test the endpoints via the live Postman documentation:
 
-## Branches
+🔗 [View Postman Collection](https://documenter.getpostman.com/view/43614350/2sB2ixjZkQ)
 
-- **dev** -> pr this branch for everything `backend` related
-- **main** -> **dont touch** this branch, this is what is running in production!
+##  🔌 Available Endpoints
+Here's an overview of available routes:
 
-## Contributions
+### 📁 Disputes
+```
+GET /api/v1/disputes – List all disputes
 
-pedmonie-express-backend is open to contributions, but I recommend creating an issue or replying in a comment to let us know what you are working on first that way we don't overwrite each other.
+GET /api/v1/disputes/:id – Get a single dispute by ID
 
-## Contribution Guidelines
+POST /api/v1/disputes – Create a new dispute
 
-1. Clone the repo `git clone https://github.com/InternPulse/pos-padi-express-backend.git`.
-2. Open your terminal & set the origin branch: `git remote add origin https://github.com/InternPulse/pos-padi-express-backend.git`
-3. Pull origin `git pull origin dev`
-4. Create a new branch for the task you were assigned to, eg `TicketNumber/(Feat/Bug/Fix/Chore)/Ticket-title` : `git checkout -b BA-001/Feat/Sign-Up-from`
-5. After making changes, do `git add .`
-6. Commit your changes with a descriptive commit message : `git commit -m "your commit message"`.
-7. To make sure there are no conflicts, run `git pull origin dev`.
-8. Push changes to your new branch, run `git push -u origin feat-csv-parser`.
-9. Create a pull request to the `dev` branch not `main`.
-10. Ensure to describe your pull request.
-11. > If you've added code that should be tested, add some test examples.
+PUT /api/v1/disputes/:id – Update a dispute
 
-# Merging
+DELETE /api/v1/disputes/:id – Delete a dispute
 
-Under any circumstances should you merge a pull request on a specific branch to the `dev` or `main` branch
+GET /api/v1/disputes/stats – Get dispute statistics
+```
+### 🔔 Notifications
+```
+POST /api/v1/notifications – Create a new notification
 
-### _Commit CheatSheet_
+GET /api/v1/notifications – Get all notifications (with query filters)
 
-| Type     |                          | Description                                                                                                 |
-| -------- | ------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| feat     | Features                 | A new feature                                                                                               |
-| fix      | Bug Fixes                | A bug fix                                                                                                   |
-| docs     | Documentation            | Documentation only changes                                                                                  |
-| style    | Styles                   | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)     |
-| refactor | Code Refactoring         | A code change that neither fixes a bug nor adds a feature                                                   |
-| perf     | Performance Improvements | A code change that improves performance                                                                     |
-| test     | Tests                    | Adding missing tests or correcting existing tests                                                           |
-| build    | Builds                   | Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)         |
-| ci       | Continuous Integrations  | Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs) |
-| chore    | Chores                   | Other changes that don't modify, backend or test files                                                      |
-| revert   | Reverts                  | Reverts a previous commit                                                                                   |
+GET /api/v1/notifications/:id – Get a single notification by ID
 
-> _Sample Commit Messages_
+PATCH /api/v1/notifications/:id/read – Mark a notification as read
+```
 
-- `chore: Updated README file`:= `chore` is used because the commit didn't make any changes to the backend or test folders in any way.
-- `feat: Added plugin info endpoints`:= `feat` is used here because the feature was non-existent before the commit.
+### 💳 Transactions
+```
+POST /api/v1/transactions – Create a new transaction
+
+GET /api/v1/transactions – List all transactions
+
+GET /api/v1/transactions/:id – Get a transaction by ID
+
+PUT /api/v1/transactions/:id – Update a transaction
+
+DELETE /api/v1/transactions/:id – Delete a transaction
+
+GET /api/v1/transactions/stats – Get overall transaction statistics
+
+GET /api/v1/transactions/agent/:agent_id/stats – Get transaction stats for a specific agent
+```
+#### (More endpoints available in the Postman Docs)
+
+## 🧪 Running Tests
+```npm test```
+
+## 🧑‍💻 Contributing
+
+- Fork the repo
+- Create your branch (git checkout -b feat/feature-name)
+- Commit your changes
+- Push and open a Pull Request
