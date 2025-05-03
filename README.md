@@ -17,7 +17,7 @@ POS Padi Express provides a secure and scalable API for handling core features r
 - **TypeScript**
 - **Express.js**
 - **Prisma ORM**
-- **PostgreSQL** (or your DB of choice)
+- **MySQL**
 - **Jest** (for testing)
 
 
@@ -27,7 +27,7 @@ POS Padi Express provides a secure and scalable API for handling core features r
 
 - Node.js ≥ 16.x
 - npm or yarn
-- PostgreSQL or any configured DB
+- MySQL
 - [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference)
 
 
@@ -51,21 +51,22 @@ cd pos-padi-express-backend
 # Postgres connection string
 DATABASE_URL=""
 # Secret key for signing JWTs
-JWTKEY=""
+JWT_SECRET_KEY=
 # API Port
 PORT=5000
 ```
 
-4. Migrate Your Database:
-
-```bash
-npx prisma migrate dev --name init
-```
-
-5. Install the App dependencies:
+4. Install the App dependencies:
 
 ```bash
 npm install
+```
+
+5. Generate Prisma client and apply migrations:
+
+```bash
+npx prisma generate
+npx prisma migrate deploy
 ```
 
 6. Start the App:
