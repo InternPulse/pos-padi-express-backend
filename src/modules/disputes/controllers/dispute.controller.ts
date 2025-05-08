@@ -7,15 +7,14 @@ import {
   deleteDispute,
   // getDisputeStats,
 } from "../services/dispute.service"
-import getagentIdFromReq from "../../transaction/utils/agent-id-from-req"
+import { agentIdFromReq } from "../../transaction/utils/id-from-req"
 
 async function getAllDisputesController(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const agentId = getagentIdFromReq(req)
-  console.log("agentId", agentId)
+  const agentId = agentIdFromReq(req)
   try {
     const disputes = await getAllDisputes(req.query, agentId)
     res.status(200).json(disputes)

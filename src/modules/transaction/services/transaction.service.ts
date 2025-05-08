@@ -2,6 +2,7 @@ import { Transaction } from "@prisma/client"
 import { z } from "zod"
 import transactionRepo from "../repo/transaction.repo"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
+import { ReqUser } from "../../../shared/types"
 
 export async function createTransactionService(
   data: Transaction,
@@ -16,9 +17,9 @@ export async function getTransactionByIdService(id: string) {
 
 export async function getAllTransactionsService(
   query: z.infer<typeof getAllTransactionsSchema>,
-  agentId?: string | number,
+  user: ReqUser,
 ) {
-  return transactionRepo.getAllTransactions(query, agentId)
+  return transactionRepo.getAllTransactions(query, user)
 }
 
 export async function updateTransactionService(

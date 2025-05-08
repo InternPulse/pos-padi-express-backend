@@ -9,7 +9,7 @@ import {
   getAgentTransactionStatsService,
 } from "../services/transaction.service"
 import success from "../../../shared/utils/misc/success"
-import agentIdFromReq from "../utils/agent-id-from-req"
+import { agentIdFromReq } from "../utils/id-from-req"
 
 export async function createTransaction(req: Request, res: Response) {
   try {
@@ -60,10 +60,9 @@ export async function getTransactionById(req: Request, res: Response) {
 
 export async function getAllTransactions(req: Request, res: Response) {
   try {
-    const agentId = agentIdFromReq(req)
     const { transactions, pagination } = await getAllTransactionsService(
       req.query,
-      agentId,
+      req.user,
     )
     res.status(200).json(
       success(transactions, "Transactions retrieved successfully", {
