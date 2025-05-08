@@ -14,13 +14,14 @@ import setupSwagger from "../src/shared/utils/swagger"
 import notificationRoutes from "../src/modules/notification/routes/notification.routes"
 import transactionRoutes from "../src/modules/transaction/routes/transaction.routes"
 import disputesRoutes from "../src/modules/disputes/routes/disputes.routes"
+import { ReqUser } from "../src/shared/types"
 
 dotenv.config()
 
 declare global {
   namespace Express {
     interface Request {
-      user: any
+      user: ReqUser
     }
   }
 }
