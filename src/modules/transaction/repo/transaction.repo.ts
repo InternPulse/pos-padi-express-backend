@@ -4,35 +4,62 @@ import { randomUUID } from "crypto"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
 import getPagination from "../../../shared/utils/misc/get-pagination"
 import generateWhereClause from "../utils/generate-where-clause"
+import { TransactionWithAgentCustomer } from "../types"
+import { ReqUser } from "../../../shared/types"
 
 const prisma = new PrismaClient()
 
-async function createTransaction(data: Transaction, agentId: string) {
+async function createTransaction(data: Transaction, user: ReqUser) {
   const reference = randomUUID().replace(/-/g, "").toUpperCase().slice(0, 12)
   return prisma.transaction.create({
-    data: { ...data, reference, agent_id: agentId },
+    data: { ...data, reference, agent_id: user.user_id },
   })
 }
 
-async function getTransactionById(id: string) {
-  return prisma.transaction.findUnique({ where: { id } })
+async function getTransactionById(id: string, user: ReqUser) {
+  const where: Record<string, unknown> = {}
+
+  if (user.role === "owner" && user.company_id) {
+    const agents = (await prisma.$queryRaw`
+    SELECT user_id_id FROM agents_agent WHERE company_id = ${user.company_id}
+  `) as Record<string, string>[]
+
+    if (agents && agents.length > 0)
+      where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
+  }
+
+  const transaction = prisma.transaction.findUnique({ where: { id, ...where } })
+
+  return transaction
 }
 
 async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
-  agentId?: string | number,
+  user: ReqUser,
 ) {
+  const agentId = user.agent_id
+  const companyId = user.company_id
+
   const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
 
   const where = generateWhereClause(query)
 
-  if (agentId) where.agent_id = String(agentId)
+  if (user.role === "owner" && companyId) {
+    const agents = (await prisma.$queryRaw`
+    SELECT user_id_id FROM agents_agent WHERE company_id = ${companyId}
+  `) as Record<string, string>[]
+
+    if (agents && agents.length > 0)
+      where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
+  }
+
+  if (user.role === "agent" && agentId) where.agent_id = String(agentId)
 
   const totalCount = await prisma.transaction.count({ where })
 
-  const transactions = await prisma.transaction.findMany({
+  const rawTransactions = await prisma.transaction.findMany({
     take: limitNumber,
     skip: (pageNumber - 1) * limitNumber,
     orderBy: {
@@ -40,6 +67,29 @@ async function getAllTransactions(
     },
     where,
   })
+
+  const transactions = await Promise.all(
+    rawTransactions.map(async (t) => {
+      const transaction = { ...t } as TransactionWithAgentCustomer
+
+      const [agent] = (await prisma.$queryRaw`
+      SELECT * FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
+    `) as any[]
+      const [customer] = (await prisma.$queryRaw`
+      SELECT * FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
+    `) as any[]
+
+      transaction.agent = agent
+        ? { first_name: agent.first_name, last_name: agent.last_name }
+        : {}
+
+      transaction.customer = customer
+        ? { first_name: customer.first_name, last_name: customer.last_name }
+        : {}
+
+      return transaction
+    }),
+  )
 
   return {
     transactions,
@@ -51,18 +101,26 @@ async function getAllTransactions(
   }
 }
 
-async function updateTransaction(id: string, data: Partial<Transaction>) {
-  const transaction = await getTransactionById(id)
+async function updateTransaction(
+  id: string,
+  data: Partial<Transaction>,
+  user: ReqUser,
+) {
+  const transaction = await getTransactionById(id, user)
   if (!transaction) return null
   return prisma.transaction.update({ where: { id }, data })
 }
 
-async function deleteTransaction(id: string) {
-  let transaction = await getTransactionById(id)
+async function deleteTransaction(id: string, user: ReqUser) {
+  let transaction = await getTransactionById(id, user)
   if (!transaction) return null
-  transaction = await updateTransaction(id, {
-    is_active: false,
-  })
+  transaction = await updateTransaction(
+    id,
+    {
+      is_active: false,
+    },
+    user,
+  )
   return transaction
 }
 

@@ -2,34 +2,36 @@ import { Transaction } from "@prisma/client"
 import { z } from "zod"
 import transactionRepo from "../repo/transaction.repo"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
+import { ReqUser } from "../../../shared/types"
 
 export async function createTransactionService(
   data: Transaction,
-  agentId: string,
+  user: ReqUser,
 ) {
-  return transactionRepo.createTransaction(data, agentId)
+  return transactionRepo.createTransaction(data, user)
 }
 
-export async function getTransactionByIdService(id: string) {
-  return transactionRepo.getTransactionById(id)
+export async function getTransactionByIdService(id: string, user: ReqUser) {
+  return transactionRepo.getTransactionById(id, user)
 }
 
 export async function getAllTransactionsService(
   query: z.infer<typeof getAllTransactionsSchema>,
-  agentId?: string | number,
+  user: ReqUser,
 ) {
-  return transactionRepo.getAllTransactions(query, agentId)
+  return transactionRepo.getAllTransactions(query, user)
 }
 
 export async function updateTransactionService(
   id: string,
   data: Partial<Transaction>,
+  user: ReqUser,
 ) {
-  return transactionRepo.updateTransaction(id, data)
+  return transactionRepo.updateTransaction(id, data, user)
 }
 
-export async function deleteTransactionService(id: string) {
-  return transactionRepo.deleteTransaction(id)
+export async function deleteTransactionService(id: string, user: ReqUser) {
+  return transactionRepo.deleteTransaction(id, user)
 }
 
 export async function getTransactionStatsService() {

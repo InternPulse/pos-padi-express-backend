@@ -6,15 +6,21 @@ import {
   createDisputeSchema,
   getAllDisputesSchema,
 } from "../validators/dispute.schema"
+// eslint-disable-next-line import/no-named-as-default
 import NotFoundError from "../../../shared/utils/NotFoundError"
+import { ReqUser } from "../../../shared/types"
 
 type CreateDisputeInput = z.infer<typeof createDisputeSchema> & {
   agent_id: string
 }
 
-export async function createDispute(data: z.infer<typeof createDisputeSchema>) {
+export async function createDispute(
+  data: z.infer<typeof createDisputeSchema>,
+  user: ReqUser,
+) {
   const transaction = await transactionRepo.getTransactionById(
     data.transaction_id,
+    user,
   )
   if (!transaction) {
     throw new NotFoundError(
@@ -32,7 +38,7 @@ export async function createDispute(data: z.infer<typeof createDisputeSchema>) {
 
 export async function getAllDisputes(
   query: z.infer<typeof getAllDisputesSchema>,
-  agentId: string | number,
+  agentId?: string,
 ) {
   return disputeRepo.getAllDisputes(query, agentId)
 }

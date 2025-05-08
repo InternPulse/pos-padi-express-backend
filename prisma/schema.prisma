@@ -18,12 +18,12 @@ model Transaction {
   id          String   @id @default(uuid())
   agent_id    String   @db.VarChar(255)
   customer_id String   @db.VarChar(255)
-  description String   @db.VarChar(255)
+  description String?  @db.VarChar(255)
   reference   String   @default("N/A") @db.VarChar(255)
   amount      Float
   fee         Float
   type        String
-  status      String
+  status      String   @default("Pending")
   rating      Int?
   is_active   Boolean  @default(true)
   created_at  DateTime @default(now())

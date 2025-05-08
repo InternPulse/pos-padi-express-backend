@@ -4,12 +4,13 @@ import { z } from "zod"
 import { getAllDisputesSchema } from "../validators/dispute.schema"
 import getPagination from "../../../shared/utils/misc/get-pagination"
 import generateWhereClause from "../utils/generate-where-clause"
+// eslint-disable-next-line import/no-named-as-default
 import ConflictError from "../utils/ConflictError"
 import ApiError from "../../../shared/utils/ApiError"
 
 const prisma = new PrismaClient()
 
-async function createDisputeRepo(data: Disputes) {
+async function createDisputeRepo(data: Record<string, any>) {
   try {
     const disputeExists = await prisma.disputes.findFirst({
       where: {
@@ -70,7 +71,7 @@ async function getDisputeById(id: string) {
 }
 async function getAllDisputes(
   query: z.infer<typeof getAllDisputesSchema>,
-  agentId: string | number,
+  agentId?: string,
 ) {
   const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)

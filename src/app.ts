@@ -12,11 +12,12 @@ import setupSwagger from "./shared/utils/swagger"
 import notificationRoutes from "./modules/notification/routes/notification.routes"
 import transactionRoutes from "./modules/transaction/routes/transaction.routes"
 import disputesRoutes from "./modules/disputes/routes/disputes.routes"
+import { ReqUser } from "./shared/types"
 
 declare global {
   namespace Express {
     interface Request {
-      user: any
+      user: ReqUser
     }
   }
 }
