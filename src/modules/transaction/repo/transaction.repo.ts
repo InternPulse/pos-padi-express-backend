@@ -28,9 +28,28 @@ async function getTransactionById(id: string, user: ReqUser) {
       where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
   }
 
-  const transaction = prisma.transaction.findUnique({ where: { id, ...where } })
+  const t = await prisma.transaction.findUnique({ where: { id, ...where } })
 
-  return transaction
+  if (!t) return null
+
+  const transaction = { ...t } as TransactionWithAgentCustomer
+
+  const [agent] = (await prisma.$queryRaw`
+    SELECT * FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
+  `) as any[]
+  const [customer] = (await prisma.$queryRaw`
+    SELECT * FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
+  `) as any[]
+
+  transaction.agent = agent
+    ? { first_name: agent.first_name, last_name: agent.last_name }
+    : {}
+
+  transaction.customer = customer
+    ? { first_name: customer.first_name, last_name: customer.last_name }
+    : {}
+
+  return transaction as Transaction
 }
 
 async function getAllTransactions(
