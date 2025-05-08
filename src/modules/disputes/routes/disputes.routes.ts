@@ -16,7 +16,7 @@ router.get("/", getAllDisputesController)
 router.get("/:id", getDisputeByIdController)
 router.put("/:id", updateDisputeController)
 router.delete("/:id", deleteDisputeController)
-router.get("/stats", getDisputeStatsController)
+// router.get("/stats", getDisputeStatsController)
 router.post(
   "/",
   validateRequest(createDisputeSchema, "body"),

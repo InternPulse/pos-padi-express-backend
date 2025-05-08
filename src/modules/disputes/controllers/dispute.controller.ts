@@ -5,16 +5,19 @@ import {
   getDisputeById,
   updateDispute,
   deleteDispute,
-  getDisputeStats,
+  // getDisputeStats,
 } from "../services/dispute.service"
+import getagentIdFromReq from "../../transaction/utils/agent-id-from-req"
 
 async function getAllDisputesController(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
+  const agentId = getagentIdFromReq(req)
+  console.log("agentId", agentId)
   try {
-    const disputes = await getAllDisputes(req.query)
+    const disputes = await getAllDisputes(req.query, agentId)
     res.status(200).json(disputes)
   } catch (error: any) {
     next(error)
@@ -27,8 +30,8 @@ async function createDisputeController(
   next: NextFunction,
 ) {
   try {
-    console.log(req.user, "hello2")
-    const dispute = await createDispute(req.body)
+    const data = { ...req.body, user_id: req.user.user_id }
+    const dispute = await createDispute(data)
     res.status(201).json(dispute)
   } catch (error: any) {
     next(error)
@@ -84,11 +87,18 @@ async function getDisputeStatsController(
   next: NextFunction,
 ) {
   try {
-    const stats = await getDisputeStats()
-    res.status(200).json(stats)
-  } catch (error: any) {
+    return res.status(501).json({
+      message: "Not implemented yet from dispute controller",
+    })
+  } catch (error) {
     next(error)
   }
+  // try {
+  //   const stats = await getDisputeStats()
+  //   res.status(200).json(stats)
+  // } catch (error: any) {
+  //   next(error)
+  // }
 }
 
 export {

@@ -23,8 +23,33 @@ async function createDisputeRepo(data: Disputes) {
         409,
       )
     }
+    const transaction = await prisma.transaction.findUnique({
+      where: {
+        id: data.transaction_id,
+      },
+    })
+
+    if (!transaction) {
+      throw new ApiError("Transaction not found", 404)
+    }
+
     // eslint-disable-next-line @typescript-eslint/return-await
-    return await prisma.disputes.create({ data })
+    return await prisma.disputes.create({
+      data: {
+        reason: data.reason,
+        account_number: data.account_number,
+        bank_name: data.bank_name,
+        account_name: data.account_name,
+
+        agent_id: transaction.agent_id,
+        status: data.status ?? "Pending",
+        resolution_notes: data.resolution_notes ?? null,
+        is_active: data.is_active ?? true,
+        transaction: {
+          connect: { id: data.transaction_id },
+        },
+      },
+    })
   } catch (error: any) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -43,12 +68,16 @@ async function getDisputeById(id: string) {
     include: { transaction: true },
   })
 }
-async function getAllDisputes(query: z.infer<typeof getAllDisputesSchema>) {
+async function getAllDisputes(
+  query: z.infer<typeof getAllDisputesSchema>,
+  agentId: string | number,
+) {
   const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
 
   const where = generateWhereClause(query)
+  if (agentId) where.agent_id = String(agentId)
 
   const totalCount = await prisma.disputes.count({ where })
 
