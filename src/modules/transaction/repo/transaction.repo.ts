@@ -11,9 +11,26 @@ const prisma = new PrismaClient()
 
 async function createTransaction(data: Transaction, user: ReqUser) {
   const reference = randomUUID().replace(/-/g, "").toUpperCase().slice(0, 12)
-  return prisma.transaction.create({
+  const t = await prisma.transaction.create({
     data: { ...data, reference, agent_id: user.user_id },
   })
+  const transaction = { ...t } as TransactionWithAgentCustomer
+
+  const [agent] = (await prisma.$queryRaw`
+    SELECT first_name, last_name FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
+  `) as any[]
+  const [customer] = (await prisma.$queryRaw`
+    SELECT first_name, last_name FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
+  `) as any[]
+
+  transaction.agent = agent
+    ? { first_name: agent.first_name, last_name: agent.last_name }
+    : {}
+  transaction.customer = customer
+    ? { first_name: customer.first_name, last_name: customer.last_name }
+    : {}
+
+  return transaction
 }
 
 async function getTransactionById(id: string, user: ReqUser) {
@@ -28,6 +45,9 @@ async function getTransactionById(id: string, user: ReqUser) {
       where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
   }
 
+  if (user.role === "agent" && user.user_id)
+    where.agent_id = String(user.user_id)
+
   const t = await prisma.transaction.findUnique({ where: { id, ...where } })
 
   if (!t) return null
@@ -35,10 +55,10 @@ async function getTransactionById(id: string, user: ReqUser) {
   const transaction = { ...t } as TransactionWithAgentCustomer
 
   const [agent] = (await prisma.$queryRaw`
-    SELECT * FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
+    SELECT first_name, last_name FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
   `) as any[]
   const [customer] = (await prisma.$queryRaw`
-    SELECT * FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
+    SELECT first_name, last_name FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
   `) as any[]
 
   transaction.agent = agent
@@ -56,7 +76,7 @@ async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
   user: ReqUser,
 ) {
-  const agentId = user.agent_id
+  const agentId = user.user_id
   const companyId = user.company_id
 
   const { page = "1", limit = "10", sort_key, sort_direction } = query
@@ -67,11 +87,19 @@ async function getAllTransactions(
 
   if (user.role === "owner" && companyId) {
     const agents = (await prisma.$queryRaw`
-    SELECT user_id_id FROM agents_agent WHERE company_id = ${companyId}
-  `) as Record<string, string>[]
+      SELECT user_id_id FROM agents_agent WHERE company_id = ${companyId}
+    `) as Record<string, string>[]
 
-    if (agents && agents.length > 0)
-      where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
+    const agentIds = agents.map((agent) => agent.user_id_id)
+
+    if (where.agent_id) {
+      if (Array.isArray(where.agent_id))
+        where.agent_id = where.agent_id.filter((id) => agentIds.includes(id))
+      else {
+        where.agent_id = agentIds.find((id) => id === where.agent_id)
+        if (!where.agent_id) delete where.agent_id
+      }
+    } else where.agent_id = { in: agentIds }
   }
 
   if (user.role === "agent" && agentId) where.agent_id = String(agentId)

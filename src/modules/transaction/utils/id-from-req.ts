@@ -2,7 +2,7 @@ import { Request } from "express"
 
 export function agentIdFromReq(req: Request) {
   if (!req.user || req.user.role !== "agent") return ""
-  return req.user.agent_id
+  return req.user.user_id
 }
 
 export function companyIdFromReq(req: Request) {

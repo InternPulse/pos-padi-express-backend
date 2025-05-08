@@ -18,7 +18,7 @@ export async function createTransaction(req: Request, res: Response) {
     if (!agentId) {
       res.status(403).json({
         success: false,
-        message: "You are not authorized to create this transaction",
+        message: "You are not authorized to create a transaction",
       })
       return
     }
