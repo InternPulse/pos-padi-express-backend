@@ -8,7 +8,7 @@ export const createDisputeSchema = z.object({
     .default(() => crypto.randomUUID()),
   transaction_id: z.string().uuid(),
   status: z.enum(["Pending", "Resolved", "Rejected"]).default("Pending"),
-  resolution_notes: z.string().nullable().default(null),
+  resolution_notes: z.string().nullable().default(null).optional(),
   account_number: z.string().nullable().optional(),
   account_name: z.string().nullable().default(null).optional(),
   reason: z.string().nullable().optional(),

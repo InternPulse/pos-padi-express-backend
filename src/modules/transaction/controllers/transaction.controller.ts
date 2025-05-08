@@ -23,7 +23,7 @@ export async function createTransaction(req: Request, res: Response) {
       return
     }
 
-    const transaction = await createTransactionService(req.body, agentId)
+    const transaction = await createTransactionService(req.body, req.user)
     res
       .status(201)
       .json(success(transaction, "Transaction created successfully"))
@@ -34,7 +34,7 @@ export async function createTransaction(req: Request, res: Response) {
 
 export async function getTransactionById(req: Request, res: Response) {
   try {
-    const transaction = await getTransactionByIdService(req.params.id)
+    const transaction = await getTransactionByIdService(req.params.id, req.user)
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return
@@ -78,7 +78,7 @@ export async function updateTransaction(req: Request, res: Response) {
   try {
     const agentId = agentIdFromReq(req)
 
-    let transaction = await getTransactionByIdService(req.params.id)
+    let transaction = await getTransactionByIdService(req.params.id, req.user)
 
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
@@ -93,7 +93,11 @@ export async function updateTransaction(req: Request, res: Response) {
       return
     }
 
-    transaction = await updateTransactionService(req.params.id, req.body)
+    transaction = await updateTransactionService(
+      req.params.id,
+      req.body,
+      req.user,
+    )
 
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
@@ -112,7 +116,7 @@ export async function deleteTransaction(req: Request, res: Response) {
   try {
     const agentId = agentIdFromReq(req)
 
-    let transaction = await getTransactionByIdService(req.params.id)
+    let transaction = await getTransactionByIdService(req.params.id, req.user)
 
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
@@ -127,7 +131,7 @@ export async function deleteTransaction(req: Request, res: Response) {
       return
     }
 
-    transaction = await deleteTransactionService(req.params.id)
+    transaction = await deleteTransactionService(req.params.id, req.user)
     if (!transaction) {
       res.status(404).json({ success: false, message: "Transaction not found" })
       return

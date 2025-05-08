@@ -30,7 +30,7 @@ async function createDisputeController(
 ) {
   try {
     const data = { ...req.body, user_id: req.user.user_id }
-    const dispute = await createDispute(data)
+    const dispute = await createDispute(data, req.user)
     res.status(201).json(dispute)
   } catch (error: any) {
     next(error)

@@ -10,7 +10,7 @@ import ApiError from "../../../shared/utils/ApiError"
 
 const prisma = new PrismaClient()
 
-async function createDisputeRepo(data: Disputes) {
+async function createDisputeRepo(data: Record<string, any>) {
   try {
     const disputeExists = await prisma.disputes.findFirst({
       where: {
