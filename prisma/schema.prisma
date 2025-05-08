@@ -35,11 +35,16 @@ model Transaction {
 }
 
 model Disputes {
-  id             String @id @default(uuid())
-  transaction_id String @db.VarChar(255)
+  id             String  @id @default(uuid())
+  transaction_id String  @db.VarChar(255)
+  agent_id       String?
 
   status           String   @default("Pending")
+  reason           String?
   resolution_notes String?
+  account_number   String?
+  bank_name        String?
+  account_name     String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
   is_active        Boolean  @default(true)

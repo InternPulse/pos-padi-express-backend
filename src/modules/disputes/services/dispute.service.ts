@@ -8,6 +8,10 @@ import {
 } from "../validators/dispute.schema"
 import NotFoundError from "../../../shared/utils/NotFoundError"
 
+type CreateDisputeInput = z.infer<typeof createDisputeSchema> & {
+  agent_id: string
+}
+
 export async function createDispute(data: z.infer<typeof createDisputeSchema>) {
   const transaction = await transactionRepo.getTransactionById(
     data.transaction_id,
@@ -18,13 +22,19 @@ export async function createDispute(data: z.infer<typeof createDisputeSchema>) {
     )
   }
 
-  return disputeRepo.createDisputeRepo(data)
+  const input: CreateDisputeInput = {
+    ...data,
+    agent_id: transaction.agent_id,
+  }
+
+  return disputeRepo.createDisputeRepo(input)
 }
 
 export async function getAllDisputes(
   query: z.infer<typeof getAllDisputesSchema>,
+  agentId: string | number,
 ) {
-  return disputeRepo.getAllDisputes(query)
+  return disputeRepo.getAllDisputes(query, agentId)
 }
 
 export async function getDisputeById(id: string): Promise<Disputes | null> {
@@ -42,25 +52,25 @@ export async function deleteDispute(id: string): Promise<Disputes | null> {
   return disputeRepo.deleteDispute(id)
 }
 
-export async function getDisputeStats() {
-  const totalDisputes = await disputeRepo
-    .getAllDisputes({})
-    .then((result) => result.pagination.count)
+// export async function getDisputeStats() {
+//   const totalDisputes = await disputeRepo
+//     .getAllDisputes({})
+//     .then((result) => result.pagination.count)
 
-  const rejectedDisputes = await disputeRepo
-    .getAllDisputes({ status: "Rejected" })
-    .then((result) => result.pagination.count)
-  const pendingDisputes = await disputeRepo
-    .getAllDisputes({ status: "Pending" })
-    .then((result) => result.pagination.count)
-  const resolvedDisputes = await disputeRepo
-    .getAllDisputes({ status: "Resolved" })
-    .then((result) => result.pagination.count)
+//   const rejectedDisputes = await disputeRepo
+//     .getAllDisputes({ status: "Rejected" })
+//     .then((result) => result.pagination.count)
+//   const pendingDisputes = await disputeRepo
+//     .getAllDisputes({ status: "Pending" })
+//     .then((result) => result.pagination.count)
+//   const resolvedDisputes = await disputeRepo
+//     .getAllDisputes({ status: "Resolved" })
+//     .then((result) => result.pagination.count)
 
-  return {
-    totalDisputes,
-    rejectedDisputes,
-    pendingDisputes,
-    resolvedDisputes,
-  }
-}
+//   return {
+//     totalDisputes,
+//     rejectedDisputes,
+//     pendingDisputes,
+//     resolvedDisputes,
+//   }
+// }
