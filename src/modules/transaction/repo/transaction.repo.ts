@@ -41,8 +41,7 @@ async function getTransactionById(id: string, user: ReqUser) {
     SELECT user_id_id FROM agents_agent WHERE company_id = ${user.company_id}
   `) as Record<string, string>[]
 
-    if (agents && agents.length > 0)
-      where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
+    where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
   }
 
   if (user.role === "agent" && user.user_id)

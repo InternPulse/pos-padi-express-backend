@@ -7,6 +7,8 @@ import generateWhereClause from "../utils/generate-where-clause"
 // eslint-disable-next-line import/no-named-as-default
 import ConflictError from "../utils/ConflictError"
 import ApiError from "../../../shared/utils/ApiError"
+import transactionRepo from "../../transaction/repo/transaction.repo"
+import { ReqUser } from "../../../shared/types"
 
 const prisma = new PrismaClient()
 
@@ -63,26 +65,73 @@ async function createDisputeRepo(data: Record<string, any>) {
     throw error
   }
 }
-async function getDisputeById(id: string) {
-  return prisma.disputes.findUnique({
+
+async function getDisputeById(id: string, user: ReqUser) {
+  const where: Record<string, unknown> = {}
+
+  if (user.role === "owner" && user.company_id) {
+    const agents = (await prisma.$queryRaw`
+    SELECT user_id_id FROM agents_agent WHERE company_id = ${user.company_id}
+  `) as Record<string, string>[]
+
+    where.agent_id = { in: agents.map((agent) => agent.user_id_id) }
+  }
+
+  if (user.role === "agent" && user.user_id)
+    where.agent_id = String(user.user_id)
+
+  const d = await prisma.disputes.findUnique({
     where: { id },
     include: { transaction: true },
   })
+
+  const dispute = { ...d } as Record<string, any>
+
+  const transaction = await transactionRepo.getTransactionById(
+    dispute.transaction_id,
+    user,
+  )
+
+  dispute.transaction = transaction
+
+  return dispute as Disputes
 }
+
 async function getAllDisputes(
   query: z.infer<typeof getAllDisputesSchema>,
-  agentId?: string,
+  user: ReqUser,
 ) {
+  const agentId = user.user_id
+  const companyId = user.company_id
+
   const { page = "1", limit = "10", sort_key, sort_direction } = query
   const pageNumber = parseInt(page, 10)
   const limitNumber = parseInt(limit, 10)
 
   const where = generateWhereClause(query)
-  if (agentId) where.agent_id = String(agentId)
+
+  if (user.role === "owner" && companyId) {
+    const agents = (await prisma.$queryRaw`
+      SELECT user_id_id FROM agents_agent WHERE company_id = ${companyId}
+    `) as Record<string, string>[]
+
+    const agentIds = agents.map((agent) => agent.user_id_id)
+
+    if (where.agent_id) {
+      if (Array.isArray(where.agent_id))
+        where.agent_id = where.agent_id.filter((id) => agentIds.includes(id))
+      else {
+        where.agent_id = agentIds.find((id) => id === where.agent_id)
+        if (!where.agent_id) delete where.agent_id
+      }
+    } else where.agent_id = { in: agentIds }
+  }
+
+  if (user.role === "agent" && agentId) where.agent_id = String(agentId)
 
   const totalCount = await prisma.disputes.count({ where })
 
-  const disputes = await prisma.disputes.findMany({
+  const rawDisputes = await prisma.disputes.findMany({
     take: limitNumber,
     skip: (pageNumber - 1) * limitNumber,
     orderBy: {
@@ -91,6 +140,18 @@ async function getAllDisputes(
     where,
     include: { transaction: true },
   })
+
+  const disputes = await Promise.all(
+    rawDisputes.map(async (d) => {
+      const dispute = { ...d } as Record<string, any>
+      const transaction = await transactionRepo.getTransactionById(
+        dispute.transaction_id,
+        user,
+      )
+      dispute.transaction = transaction
+      return dispute
+    }),
+  )
 
   return {
     disputes,
@@ -101,8 +162,12 @@ async function getAllDisputes(
     ),
   }
 }
-async function updateDispute(id: string, data: Partial<Disputes>) {
-  const dispute = await getDisputeById(id)
+async function updateDispute(
+  id: string,
+  data: Partial<Disputes>,
+  user: ReqUser,
+) {
+  const dispute = await getDisputeById(id, user)
   if (!dispute) return null
   return prisma.disputes.update({
     where: { id },
@@ -110,11 +175,11 @@ async function updateDispute(id: string, data: Partial<Disputes>) {
     include: { transaction: true },
   })
 }
-async function deleteDispute(id: string) {
-  const dispute = await getDisputeById(id)
+async function deleteDispute(id: string, user: ReqUser) {
+  const dispute = await getDisputeById(id, user)
   if (!dispute) return null
 
-  return updateDispute(id, { is_active: false })
+  return updateDispute(id, { is_active: false }, user)
 }
 
 async function getDisputeStats() {

@@ -7,16 +7,14 @@ import {
   deleteDispute,
   // getDisputeStats,
 } from "../services/dispute.service"
-import { agentIdFromReq } from "../../transaction/utils/id-from-req"
 
 async function getAllDisputesController(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const agentId = agentIdFromReq(req)
   try {
-    const disputes = await getAllDisputes(req.query, agentId)
+    const disputes = await getAllDisputes(req.query, req.user)
     res.status(200).json(disputes)
   } catch (error: any) {
     next(error)
@@ -38,7 +36,7 @@ async function createDisputeController(
 }
 async function getDisputeByIdController(req: Request, res: Response) {
   try {
-    const dispute = await getDisputeById(req.params.id)
+    const dispute = await getDisputeById(req.params.id, req.user)
     if (!dispute) {
       res.status(404).json({ error: "Dispute not found" })
       return
@@ -54,7 +52,7 @@ async function updateDisputeController(
   next: NextFunction,
 ) {
   try {
-    const dispute = await updateDispute(req.params.id, req.body)
+    const dispute = await updateDispute(req.params.id, req.body, req.user)
     if (!dispute) {
       res.status(404).json({ error: "Dispute not found" })
       return
@@ -70,7 +68,7 @@ async function deleteDisputeController(
   next: NextFunction,
 ) {
   try {
-    const dispute = await deleteDispute(req.params.id)
+    const dispute = await deleteDispute(req.params.id, req.user)
     if (!dispute) {
       res.status(404).json({ error: "Dispute not found" })
       return
