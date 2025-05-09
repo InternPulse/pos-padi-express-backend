@@ -38,24 +38,31 @@ export async function createDispute(
 
 export async function getAllDisputes(
   query: z.infer<typeof getAllDisputesSchema>,
-  agentId?: string,
+  user: ReqUser,
 ) {
-  return disputeRepo.getAllDisputes(query, agentId)
+  return disputeRepo.getAllDisputes(query, user)
 }
 
-export async function getDisputeById(id: string): Promise<Disputes | null> {
-  return disputeRepo.getDisputeById(id)
+export async function getDisputeById(
+  id: string,
+  user: ReqUser,
+): Promise<Disputes | null> {
+  return disputeRepo.getDisputeById(id, user)
 }
 
 export async function updateDispute(
   id: string,
   data: Partial<z.infer<typeof createDisputeSchema>>,
+  user: ReqUser,
 ): Promise<Disputes | null> {
-  return disputeRepo.updateDispute(id, data)
+  return disputeRepo.updateDispute(id, data, user)
 }
 
-export async function deleteDispute(id: string): Promise<Disputes | null> {
-  return disputeRepo.deleteDispute(id)
+export async function deleteDispute(
+  id: string,
+  user: ReqUser,
+): Promise<Disputes | null> {
+  return disputeRepo.deleteDispute(id, user)
 }
 
 // export async function getDisputeStats() {
