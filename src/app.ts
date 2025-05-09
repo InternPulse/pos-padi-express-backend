@@ -29,14 +29,7 @@ const app = express()
 // Security Middleware
 app.use(helmet())
 app.use(rateLimiter)
-app.use(
-  cors({
-    origin: "*", // For Development
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  }),
-)
+app.use(cors())
 
 setupSwagger(app)
 
