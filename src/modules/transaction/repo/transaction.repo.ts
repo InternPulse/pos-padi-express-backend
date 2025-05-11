@@ -6,6 +6,7 @@ import getPagination from "../../../shared/utils/misc/get-pagination"
 import generateWhereClause from "../utils/generate-where-clause"
 import { TransactionWithAgentCustomer } from "../types"
 import { ReqUser } from "../../../shared/types"
+import getAgentCustomerDetails from "../utils/get-agent-customer-details"
 
 const prisma = new PrismaClient()
 
@@ -16,19 +17,14 @@ async function createTransaction(data: Transaction, user: ReqUser) {
   })
   const transaction = { ...t } as TransactionWithAgentCustomer
 
-  const [agent] = (await prisma.$queryRaw`
-    SELECT first_name, last_name FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
-  `) as any[]
-  const [customer] = (await prisma.$queryRaw`
-    SELECT first_name, last_name FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
-  `) as any[]
+  const { agent, customer } = await getAgentCustomerDetails(
+    prisma,
+    transaction.agent_id,
+    transaction.customer_id,
+  )
 
   transaction.agent = agent
-    ? { first_name: agent.first_name, last_name: agent.last_name }
-    : {}
   transaction.customer = customer
-    ? { first_name: customer.first_name, last_name: customer.last_name }
-    : {}
 
   return transaction
 }
@@ -53,20 +49,14 @@ async function getTransactionById(id: string, user: ReqUser) {
 
   const transaction = { ...t } as TransactionWithAgentCustomer
 
-  const [agent] = (await prisma.$queryRaw`
-    SELECT first_name, last_name FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
-  `) as any[]
-  const [customer] = (await prisma.$queryRaw`
-    SELECT first_name, last_name FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
-  `) as any[]
+  const { agent, customer } = await getAgentCustomerDetails(
+    prisma,
+    transaction.agent_id,
+    transaction.customer_id,
+  )
 
   transaction.agent = agent
-    ? { first_name: agent.first_name, last_name: agent.last_name }
-    : {}
-
   transaction.customer = customer
-    ? { first_name: customer.first_name, last_name: customer.last_name }
-    : {}
 
   return transaction as Transaction
 }
@@ -118,20 +108,14 @@ async function getAllTransactions(
     rawTransactions.map(async (t) => {
       const transaction = { ...t } as TransactionWithAgentCustomer
 
-      const [agent] = (await prisma.$queryRaw`
-      SELECT * FROM users_user WHERE id = ${transaction.agent_id} LIMIT 1
-    `) as any[]
-      const [customer] = (await prisma.$queryRaw`
-      SELECT * FROM customers_customer WHERE id = ${transaction.customer_id} LIMIT 1
-    `) as any[]
+      const { agent, customer } = await getAgentCustomerDetails(
+        prisma,
+        transaction.agent_id,
+        transaction.customer_id,
+      )
 
       transaction.agent = agent
-        ? { first_name: agent.first_name, last_name: agent.last_name }
-        : {}
-
       transaction.customer = customer
-        ? { first_name: customer.first_name, last_name: customer.last_name }
-        : {}
 
       return transaction
     }),
@@ -152,14 +136,31 @@ async function updateTransaction(
   data: Partial<Transaction>,
   user: ReqUser,
 ) {
-  const transaction = await getTransactionById(id, user)
-  if (!transaction) return null
-  return prisma.transaction.update({ where: { id }, data })
+  const oldTransaction = await getTransactionById(id, user)
+  if (!oldTransaction) return null
+
+  const t = await prisma.transaction.update({ where: { id }, data })
+  const transaction = { ...t } as TransactionWithAgentCustomer
+
+  const { agent, customer } = await getAgentCustomerDetails(
+    prisma,
+    transaction.agent_id,
+    transaction.customer_id,
+  )
+
+  transaction.agent = agent
+  transaction.customer = customer
+
+  return transaction
 }
 
 async function deleteTransaction(id: string, user: ReqUser) {
-  let transaction = await getTransactionById(id, user)
+  let transaction = (await getTransactionById(
+    id,
+    user,
+  )) as TransactionWithAgentCustomer | null
   if (!transaction) return null
+
   transaction = await updateTransaction(
     id,
     {
@@ -167,6 +168,18 @@ async function deleteTransaction(id: string, user: ReqUser) {
     },
     user,
   )
+
+  if (!transaction) return null
+
+  const { agent, customer } = await getAgentCustomerDetails(
+    prisma,
+    transaction.agent_id,
+    transaction.customer_id,
+  )
+
+  transaction.agent = agent
+  transaction.customer = customer
+
   return transaction
 }
 

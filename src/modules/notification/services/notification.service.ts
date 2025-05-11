@@ -1,3 +1,4 @@
+import { ReqUser } from "../../../shared/types"
 import createNotificationDTO from "../dtos/notification.dto"
 import NotificationRepo from "../repo/notification.repo"
 
@@ -12,13 +13,13 @@ export class NotificationService {
     return notification
   }
 
-  async getNotificationById(id: string, user_id: string) {
-    const notification = await this.repo.getNotificationById(id, user_id)
+  async getNotificationById(id: string, user: ReqUser) {
+    const notification = await this.repo.getNotificationById(id, user)
     return notification
   }
 
-  async getNotifications(user_id: string, page: number, limit: number) {
-    const data = await this.repo.getNotifications(user_id, page, limit)
+  async getNotifications(user: ReqUser, page: number, limit: number) {
+    const data = await this.repo.getNotifications(user, page, limit)
     return data
   }
 
