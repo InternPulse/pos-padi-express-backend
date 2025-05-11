@@ -1,7 +1,10 @@
-import { PrismaClient } from "@prisma/client"
+import { Notification, PrismaClient } from "@prisma/client"
 import logger from "../../../core/logging/logger"
 import ApiError from "../../../shared/utils/ApiError"
 import createNotificationDTO from "../dtos/notification.dto"
+import { getNotificationUserDetails } from "../utils"
+import { ReqUser } from "../../../shared/types"
+import getAgentIdsInCompany from "../../../shared/utils/product/get-agent-ids"
 
 export default class NotificationRepo {
   private prisma: PrismaClient
@@ -13,10 +16,17 @@ export default class NotificationRepo {
   async createNotification(data: createNotificationDTO) {
     try {
       logger.debug("[Notification_Repo]: Creating notification", data)
-      const notification = await this.prisma.notification.create({
+      const notification = (await this.prisma.notification.create({
         data,
-      })
+      })) as any
       logger.info("[Notification_Repo]: Notification created successfully")
+
+      const user = await getNotificationUserDetails(
+        this.prisma,
+        notification.user_id,
+      )
+      notification.user = user
+
       return notification
     } catch (e: any) {
       console.log(e)
@@ -27,22 +37,39 @@ export default class NotificationRepo {
     }
   }
 
-  async getNotificationById(id: string, user_id: string) {
+  async getNotificationById(id: string, user: ReqUser) {
     logger.debug("[Notification_Repo]: Getting notification by id", id)
-    const notification = await this.prisma.notification.findUnique({
-      where: { id, user_id },
-    })
+
+    const where: Record<string, unknown> = {}
+
+    if (user.role === "owner" && user.company_id) {
+      const agentIds = await getAgentIdsInCompany(this.prisma, user.company_id)
+      where.user_id = { in: agentIds }
+    }
+
+    if (user.role === "agent" && user.user_id)
+      where.user_id = String(user.user_id)
+
+    const notification = (await this.prisma.notification.findUnique({
+      where: { id, ...where },
+    })) as any
 
     if (!notification) {
       logger.error("[Notification_Repo]: Notification not found")
       throw new ApiError("Notification not found", 404)
     }
 
+    const notificationUser = await getNotificationUserDetails(
+      this.prisma,
+      notification.user_id,
+    )
+    notification.user = notificationUser
+
     logger.info("[Notification_Repo]: Notification fetched successfully")
-    return notification
+    return notification as Notification
   }
 
-  async getNotifications(user_id: string, page?: number, limit?: number) {
+  async getNotifications(user: ReqUser, page?: number, limit?: number) {
     try {
       // Fallback to defaults if invalid or undefined
       const currentPage = Number(page) > 0 ? Number(page) : 1
@@ -50,18 +77,45 @@ export default class NotificationRepo {
 
       const skip = (currentPage - 1) * currentLimit
 
+      const where: Record<string, unknown> = {}
+
+      if (user.role === "owner" && user.company_id) {
+        const agentIds = await getAgentIdsInCompany(
+          this.prisma,
+          user.company_id,
+        )
+        where.user_id = { in: agentIds }
+      }
+
+      if (user.role === "agent" && user.user_id)
+        where.user_id = String(user.user_id)
+
       logger.debug("[Notification_Repo]: Getting notifications")
-      const [notifications, total] = await this.prisma.$transaction([
+      const [rawNotifications, total] = await this.prisma.$transaction([
         this.prisma.notification.findMany({
-          where: { user_id },
+          where,
           orderBy: { created_at: "desc" },
           skip,
           take: currentLimit,
         }),
         this.prisma.notification.count({
-          where: { user_id },
+          where,
         }),
       ])
+
+      const notifications = await Promise.all(
+        rawNotifications.map(async (n) => {
+          const notification = { ...n } as any
+
+          const notificationUser = await getNotificationUserDetails(
+            this.prisma,
+            n.user_id,
+          )
+          notification.user = notificationUser
+
+          return notification
+        }),
+      )
 
       logger.info("[Notification_Repo]: Notifications fetched successfully")
       return {
