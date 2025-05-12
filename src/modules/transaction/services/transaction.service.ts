@@ -20,6 +20,7 @@ export async function createTransactionService(
 
   await notificationService.createNotification({
     user_id: user.user_id,
+    company_id: user.company_id,
     type: "transaction",
     message: `Transaction created with reference ${transaction.reference}`,
     title: "Transaction Created",
@@ -66,6 +67,7 @@ export async function updateTransactionService(
   if (transaction) {
     await notificationService.createNotification({
       user_id: user.user_id,
+      company_id: user.company_id,
       type: "transaction",
       message: `Transaction updated with reference ${transaction.reference}`,
       title: "Transaction Updated",
@@ -87,6 +89,7 @@ export async function deleteTransactionService(id: string, user: ReqUser) {
   if (transaction) {
     await notificationService.createNotification({
       user_id: user.user_id,
+      company_id: user.company_id,
       type: "transaction",
       message: `Transaction deleted with reference ${transaction.reference}`,
       title: "Transaction Deleted",

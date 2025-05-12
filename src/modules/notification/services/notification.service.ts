@@ -23,8 +23,8 @@ export class NotificationService {
     return data
   }
 
-  async markNotificationAsRead(id: string, user_id: string) {
-    await this.repo.markNotificationAsRead(id, user_id)
+  async markNotificationAsRead(id: string, user: ReqUser) {
+    await this.repo.markNotificationAsRead(id, user)
   }
 }
 // comment
