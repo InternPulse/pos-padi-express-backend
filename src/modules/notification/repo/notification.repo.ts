@@ -4,7 +4,6 @@ import ApiError from "../../../shared/utils/ApiError"
 import createNotificationDTO from "../dtos/notification.dto"
 import { getNotificationUserDetails } from "../utils"
 import { ReqUser } from "../../../shared/types"
-import getAgentIdsInCompany from "../../../shared/utils/product/get-agent-ids"
 
 export default class NotificationRepo {
   private prisma: PrismaClient
@@ -16,16 +15,24 @@ export default class NotificationRepo {
   async createNotification(data: createNotificationDTO) {
     try {
       logger.debug("[Notification_Repo]: Creating notification", data)
-      const notification = (await this.prisma.notification.create({
-        data,
-      })) as any
+      const [notification] = (await this.prisma.$transaction([
+        this.prisma.notification.create({
+          data,
+        }),
+        this.prisma.notification.create({
+          data: { ...data, user_id: null },
+        }),
+      ])) as any[]
+
       logger.info("[Notification_Repo]: Notification created successfully")
 
-      const user = await getNotificationUserDetails(
+      if (!notification.user_id) return notification
+
+      const notificationUser = await getNotificationUserDetails(
         this.prisma,
         notification.user_id,
       )
-      notification.user = user
+      notification.user = notificationUser
 
       return notification
     } catch (e: any) {
@@ -43,12 +50,13 @@ export default class NotificationRepo {
     const where: Record<string, unknown> = {}
 
     if (user.role === "owner" && user.company_id) {
-      const agentIds = await getAgentIdsInCompany(this.prisma, user.company_id)
-      where.user_id = { in: agentIds }
+      where.company_id = user.company_id
+      where.user_id = null
     }
 
-    if (user.role === "agent" && user.user_id)
-      where.user_id = String(user.user_id)
+    if (user.role === "agent" && user.user_id) {
+      where.user_id = user.user_id
+    }
 
     const notification = (await this.prisma.notification.findUnique({
       where: { id, ...where },
@@ -59,13 +67,16 @@ export default class NotificationRepo {
       throw new ApiError("Notification not found", 404)
     }
 
+    logger.info("[Notification_Repo]: Notification fetched successfully")
+
+    if (!notification.user_id) return notification
+
     const notificationUser = await getNotificationUserDetails(
       this.prisma,
       notification.user_id,
     )
     notification.user = notificationUser
 
-    logger.info("[Notification_Repo]: Notification fetched successfully")
     return notification as Notification
   }
 
@@ -80,15 +91,13 @@ export default class NotificationRepo {
       const where: Record<string, unknown> = {}
 
       if (user.role === "owner" && user.company_id) {
-        const agentIds = await getAgentIdsInCompany(
-          this.prisma,
-          user.company_id,
-        )
-        where.user_id = { in: agentIds }
+        where.company_id = user.company_id
+        where.user_id = null
       }
 
-      if (user.role === "agent" && user.user_id)
-        where.user_id = String(user.user_id)
+      if (user.role === "agent" && user.user_id) {
+        where.user_id = user.user_id
+      }
 
       logger.debug("[Notification_Repo]: Getting notifications")
       const [rawNotifications, total] = await this.prisma.$transaction([
@@ -107,6 +116,8 @@ export default class NotificationRepo {
         rawNotifications.map(async (n) => {
           const notification = { ...n } as any
 
+          if (!n.user_id) return notification
+
           const notificationUser = await getNotificationUserDetails(
             this.prisma,
             n.user_id,
@@ -118,6 +129,7 @@ export default class NotificationRepo {
       )
 
       logger.info("[Notification_Repo]: Notifications fetched successfully")
+
       return {
         notifications,
         meta: {
@@ -133,10 +145,22 @@ export default class NotificationRepo {
     }
   }
 
-  async markNotificationAsRead(id: string, user_id: string) {
+  async markNotificationAsRead(id: string, user: ReqUser) {
     logger.debug("[Notification_Repo]: Marking notification as read")
+
+    const where: Record<string, unknown> = {}
+
+    if (user.role === "owner" && user.company_id) {
+      where.company_id = user.company_id
+      where.user_id = null
+    }
+
+    if (user.role === "agent" && user.user_id) {
+      where.user_id = user.user_id
+    }
+
     const result = await this.prisma.notification.updateMany({
-      where: { id, user_id },
+      where: { id, ...where },
       data: { read: true },
     })
 

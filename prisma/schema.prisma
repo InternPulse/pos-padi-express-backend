@@ -56,7 +56,8 @@ model Disputes {
 
 model Notification {
   id           String    @id @default(uuid())
-  user_id      String    @db.VarChar(255)
+  user_id      String?   @db.VarChar(255)
+  company_id   String    @db.VarChar(255)
   title        String
   message      String
   data         Json?

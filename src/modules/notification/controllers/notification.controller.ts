@@ -6,9 +6,10 @@ export default class NotificationController {
 
   async createNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      const notification = await this.notificationService.createNotification(
-        req.body,
-      )
+      const notification = await this.notificationService.createNotification({
+        ...req.body,
+        company_id: req.user.company_id,
+      })
       res.status(201).json({
         message: "Notification created successfully",
         status: "success",
@@ -65,11 +66,10 @@ export default class NotificationController {
   ) {
     try {
       const notificationId = req.params.id
-      const userId = req.user?.user_id as string
 
       await this.notificationService.markNotificationAsRead(
         notificationId,
-        userId,
+        req.user,
       )
       res.status(200).json({
         message: "Notification marked as read",
