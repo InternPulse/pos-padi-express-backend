@@ -1,5 +1,15 @@
 import { PrismaClient } from "@prisma/client"
 
+/*
+Purpose
+To retrieve and return:
+Agent's first_name and last_name
+Customer's first_name and last_name
+Given:
+agentId
+customerId
+*/
+
 export default async function getAgentCustomerDetails(
   prisma: PrismaClient,
   agentId: string,

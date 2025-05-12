@@ -2,6 +2,19 @@ import { z } from "zod"
 import { addDays } from "date-fns"
 import { getAllTransactionsSchema } from "../validators/transaction.schema"
 
+/*
+ Purpose
+It:
+Accepts a validated query object (query) from the frontend (validated by Zod via getAllTransactionsSchema)
+Builds a where clause with filters like:
+Agent ID
+Customer ID
+Status, Type
+Date range, amount, fee, rating
+Full-text search
+Returns an object usable by Prisma ORM to query transactions.
+*/
+
 export default function generateWhereClause(
   query: z.infer<typeof getAllTransactionsSchema>,
 ) {

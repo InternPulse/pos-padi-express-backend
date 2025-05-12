@@ -10,6 +10,13 @@ import getAgentCustomerDetails from "../utils/get-agent-customer-details"
 
 const prisma = new PrismaClient()
 
+/* 
+Creates a new transaction with a random reference (12-char uppercase string).
+Assigns the agent_id from the user.
+Adds agent and customer details using getAgentCustomerDetails.
+Returns the full enriched transaction object. 
+*/
+
 async function createTransaction(data: Transaction, user: ReqUser) {
   const reference = randomUUID().replace(/-/g, "").toUpperCase().slice(0, 12)
   const t = await prisma.transaction.create({
@@ -28,6 +35,13 @@ async function createTransaction(data: Transaction, user: ReqUser) {
 
   return transaction
 }
+
+/*
+Retrieves a transaction by ID with access control:
+Owner: Can only access transactions of agents within their company.
+Agent: Can only access their own transactions.
+Uses getAgentCustomerDetails to enrich the response.
+*/
 
 async function getTransactionById(id: string, user: ReqUser) {
   const where: Record<string, unknown> = {}
@@ -60,6 +74,16 @@ async function getTransactionById(id: string, user: ReqUser) {
 
   return transaction as Transaction
 }
+
+/*
+getAllTransactions(query, user)
+Supports:
+Pagination (with limit, page)
+Sorting (sort_key, sort_direction)
+Filtering (via generateWhereClause)
+Enforces access control (owner vs agent).
+Returns enriched list of transactions + pagination metadata.
+*/
 
 async function getAllTransactions(
   query: z.infer<typeof getAllTransactionsSchema>,
@@ -131,6 +155,13 @@ async function getAllTransactions(
   }
 }
 
+/*
+updateTransaction(id, data, user)
+First fetches transaction (with access check).
+Updates it if found.
+Returns enriched version with agent/customer info.
+*/
+
 async function updateTransaction(
   id: string,
   data: Partial<Transaction>,
@@ -153,6 +184,12 @@ async function updateTransaction(
 
   return transaction
 }
+
+/*
+deleteTransaction(id, user)
+Performs a soft delete (is_active = false).
+Returns enriched deleted transaction, if found.
+*/
 
 async function deleteTransaction(id: string, user: ReqUser) {
   let transaction = (await getTransactionById(
@@ -182,6 +219,17 @@ async function deleteTransaction(id: string, user: ReqUser) {
 
   return transaction
 }
+
+/*
+getTransactionStats()
+Aggregates:
+Total amount
+Successful/failed amounts
+Count of transactions
+Total fee (revenue)
+Unique agents & customers
+Monthly transaction trend (grouped by month)
+*/
 
 async function getTransactionStats() {
   const [

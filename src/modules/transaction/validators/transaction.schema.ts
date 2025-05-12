@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+/*
+createTransactionSchema → For creating a new transaction
+*/
 export const createTransactionSchema = z.object({
   customer_id: z.string(),
   description: z.string().optional(),
@@ -10,6 +13,9 @@ export const createTransactionSchema = z.object({
   rating: z.number().optional(),
 })
 
+/*
+getAllTransactionsSchema → For filtering and listing transactions
+*/
 export const getAllTransactionsSchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
@@ -41,6 +47,9 @@ export const getAllTransactionsSchema = z.object({
   max_rating: z.string().optional(),
 })
 
+/*
+updateTransactionSchema → For updating an existing transaction
+*/
 export const updateTransactionSchema = z.object({
   customer_id: z.string().optional(),
   amount: z.number().positive().optional(),
